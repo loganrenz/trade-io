@@ -16,7 +16,28 @@ Build a secure, production-grade paper trading platform (E*TRADE-like) with:
 
 ## Quick Start for Agents
 
+### 0. **FIRST STEP: Read PROGRESS.md**
+
+**MANDATORY**: Before doing anything else, read `PROGRESS.md` in the repository root.
+
+```bash
+# Always start with this
+cat PROGRESS.md
+```
+
+This file tells you:
+- What issue to work on next
+- What's been completed
+- Current project status
+- Recent work by other agents
+
+**Use this prompt to start**: "Please continue where we left off on the Trade.io project."
+
+When you use this prompt, the first thing you do is read `PROGRESS.md`.
+
 ### 1. Pick an Issue
+
+The next issue to work on is specified in `PROGRESS.md`. If not specified there:
 
 Issues are stored in `docs/issues/` with numbered prefixes:
 - `docs/issues/0001-repo-baseline.md`
@@ -24,10 +45,11 @@ Issues are stored in `docs/issues/` with numbered prefixes:
 - etc.
 
 **Issue Selection Rules:**
-1. Work issues in numerical order unless directed otherwise
-2. Check issue status comments in the file header
-3. Verify dependencies are complete before starting
-4. Issues marked `[BLOCKED]` cannot be started yet
+1. **ALWAYS** check `PROGRESS.md` first for the next issue
+2. Work issues in numerical order unless directed otherwise
+3. Check issue status comments in the file header
+4. Verify dependencies are complete before starting
+5. Issues marked `[BLOCKED]` cannot be started yet
 
 ### 2. Branch Naming
 
@@ -222,12 +244,59 @@ Before marking an issue complete, verify ALL of these:
 - [ ] Architecture docs updated if design changed
 - [ ] Security docs updated if authZ/authN changed
 - [ ] Inline code comments for complex logic
+- [ ] **PROGRESS.md updated with completed work (MANDATORY)**
 
 #### CI/CD
 - [ ] All CI checks passing
 - [ ] No new warnings in build output
 - [ ] Docker build succeeds (if applicable)
 - [ ] Deployment config updated (if needed)
+
+### 7. Update PROGRESS.md (MANDATORY)
+
+**This step is MANDATORY and must be completed before finishing your work.**
+
+After completing your issues, you MUST update `PROGRESS.md` in the repository root.
+
+#### What to Update
+
+1. **Header section** - Update last agent, timestamp, current phase, next issue
+2. **Progress checkboxes** - Mark completed issues with `[x]`
+3. **Overall progress** - Recalculate completion percentages
+4. **Work log** - Add your entry at the TOP of the work log
+5. **Next issue** - Update to point to the next issue to work on
+6. **Recently completed** - Add your completed issues
+
+#### Work Log Entry Template
+
+```markdown
+### [UTC timestamp] - [Your agent identifier]
+**Action**: [Brief description of what you accomplished]
+
+**Issues Completed**:
+- #0001 - [Issue title] ✅
+- #0002 - [Issue title] ✅
+
+**Files Created/Modified**:
+- `path/to/file.ts` - [What changed]
+- `path/to/another.ts` - [What changed]
+
+**Tests Added**:
+- [Brief summary of tests added]
+
+**Next Steps**: [What the next agent should do]
+
+**Branch**: [Your branch name]
+**Commits**: 
+- [short hash] - [commit message]
+- [short hash] - [commit message]
+```
+
+#### Example
+
+See `PROGRESS.md` for a complete example of how to update the file.
+
+**Without updating PROGRESS.md, your work is incomplete!**
 
 ## Safety & Security
 
@@ -577,8 +646,11 @@ Issues progress through these states:
 
 When an issue is complete:
 1. Update the issue file header with status and completion date
-2. Update `docs/issues/README.md` progress tracker
-3. Commit with message: `chore: mark issue #XXXX as complete`
+2. **Update `PROGRESS.md` with your work (MANDATORY)** - see section 7 above
+3. Update `docs/issues/README.md` progress tracker (if needed)
+4. Commit with message: `chore: mark issue #XXXX as complete`
+
+**The most important step is updating `PROGRESS.md`** - this is how the next agent knows where to start!
 
 ### Reporting Blockers
 
@@ -708,8 +780,11 @@ Before marking your work complete:
 - [ ] Migration tested (if applicable)
 - [ ] No secrets committed
 - [ ] Issue file updated with completion status
+- [ ] **PROGRESS.md updated (MANDATORY - DO NOT SKIP)**
 - [ ] PR description includes summary and testing notes
 
 ---
 
 **Remember**: Quality over speed. A smaller, well-tested change is better than a large, untested one.
+
+**And NEVER forget to update PROGRESS.md!**

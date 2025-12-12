@@ -59,9 +59,15 @@ See [Local Development Guide](./docs/testing/local-dev.md) for detailed setup.
 
 ## For AI Agents
 
-**Start here**: Read [AGENTS.md](./AGENTS.md) for the complete agent workflow.
+**Use this prompt**: "Please continue where we left off on the Trade.io project."
 
-**Then**: Pick the first issue from [docs/issues/](./docs/issues/README.md).
+**Then immediately**:
+1. Read [PROGRESS.md](./PROGRESS.md) to see current status and next issue
+2. Read [AGENTS.md](./AGENTS.md) for the complete workflow
+3. Pick up the next issue from [docs/issues/](./docs/issues/README.md)
+4. **MANDATORY**: Update PROGRESS.md when you finish
+
+**Current Status**: See [PROGRESS.md](./PROGRESS.md) for live progress tracking.
 
 ## Technology Stack
 
