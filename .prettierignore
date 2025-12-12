@@ -1,0 +1,22 @@
+# Build outputs
+.nuxt
+.output
+dist
+.next
+
+# Dependencies
+node_modules
+
+# Generated files
+prisma/migrations
+.prisma
+
+# Config
+.env
+.env.*
+!.env.example
+
+# Misc
+coverage
+*.log
+.DS_Store

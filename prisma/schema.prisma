@@ -1,0 +1,199 @@
+// Prisma schema for Trade.io paper trading platform
+// This is the initial baseline schema - will be expanded in Phase 1
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// USER MANAGEMENT
+// ============================================================================
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  provider      String?   // supabase, clerk, etc.
+  providerUserId String?  @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // Soft delete
+  
+  accounts      Account[]
+  auditLogs     AuditLog[]
+  
+  @@map("users")
+  @@index([email])
+  @@index([providerUserId])
+}
+
+// ============================================================================
+// ACCOUNTS & MEMBERSHIP
+// ============================================================================
+
+model Account {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  type        String    @default("INDIVIDUAL") // INDIVIDUAL, JOINT, MARGIN
+  status      String    @default("ACTIVE") // ACTIVE, SUSPENDED, CLOSED
+  initialCash Decimal   @default(100000) @db.Decimal(18, 2) // Starting balance
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  
+  ownerId     String    @db.Uuid
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  orders      Order[]
+  positions   Position[]
+  ledgerEntries LedgerEntry[]
+  
+  @@map("accounts")
+  @@index([ownerId])
+  @@index([status])
+}
+
+// ============================================================================
+// ORDERS & EXECUTIONS
+// ============================================================================
+
+model Order {
+  id              String    @id @default(uuid()) @db.Uuid
+  accountId       String    @db.Uuid
+  symbol          String    @db.VarChar(10)
+  side            String    @db.VarChar(4) // BUY, SELL
+  quantity        Int
+  orderType       String    @db.VarChar(10) // MARKET, LIMIT, STOP, STOP_LIMIT
+  limitPrice      Decimal?  @db.Decimal(18, 4)
+  stopPrice       Decimal?  @db.Decimal(18, 4)
+  status          String    @default("PENDING") @db.VarChar(20) // PENDING, ACCEPTED, PARTIAL, FILLED, CANCELLED, REJECTED, EXPIRED
+  filledQuantity  Int       @default(0)
+  averagePrice    Decimal?  @db.Decimal(18, 4)
+  timeInForce     String    @default("DAY") @db.VarChar(10) // DAY, GTC, IOC, FOK
+  idempotencyKey  String    @unique
+  rejectionReason String?
+  version         Int       @default(1) // Optimistic locking
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  expiresAt       DateTime?
+  
+  account         Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  executions      Execution[]
+  
+  @@map("orders")
+  @@index([accountId, status])
+  @@index([symbol])
+  @@index([status])
+  @@index([createdAt])
+  @@index([idempotencyKey])
+}
+
+model Execution {
+  id          String   @id @default(uuid()) @db.Uuid
+  orderId     String   @db.Uuid
+  symbol      String   @db.VarChar(10)
+  side        String   @db.VarChar(4)
+  quantity    Int
+  price       Decimal  @db.Decimal(18, 4)
+  commission  Decimal  @default(0) @db.Decimal(18, 4)
+  executedAt  DateTime @default(now())
+  
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@map("executions")
+  @@index([orderId])
+  @@index([symbol])
+  @@index([executedAt])
+}
+
+// ============================================================================
+// POSITIONS & LEDGER
+// ============================================================================
+
+model Position {
+  id             String   @id @default(uuid()) @db.Uuid
+  accountId      String   @db.Uuid
+  symbol         String   @db.VarChar(10)
+  quantity       Int      // Current quantity (can be negative for short positions)
+  averageCost    Decimal  @db.Decimal(18, 4)
+  realizedPnL    Decimal  @default(0) @db.Decimal(18, 2)
+  updatedAt      DateTime @updatedAt
+  
+  account        Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@unique([accountId, symbol])
+  @@map("positions")
+  @@index([accountId])
+  @@index([symbol])
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid()) @db.Uuid
+  accountId      String   @db.Uuid
+  entryType      String   @db.VarChar(20) // DEPOSIT, WITHDRAWAL, TRADE, DIVIDEND, FEE, ADJUSTMENT
+  symbol         String?  @db.VarChar(10)
+  quantity       Int?     // For stock entries
+  cashAmount     Decimal  @db.Decimal(18, 2) // Positive = debit, Negative = credit
+  balanceAfter   Decimal  @db.Decimal(18, 2)
+  description    String
+  referenceId    String?  @db.Uuid // Order ID or execution ID
+  createdAt      DateTime @default(now())
+  
+  account        Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@map("ledger_entries")
+  @@index([accountId, createdAt])
+  @@index([referenceId])
+}
+
+// ============================================================================
+// MARKET DATA (Basic - will be expanded in Phase 3)
+// ============================================================================
+
+model Instrument {
+  id          String   @id @default(uuid()) @db.Uuid
+  symbol      String   @unique @db.VarChar(10)
+  name        String
+  type        String   @default("STOCK") @db.VarChar(20) // STOCK, ETF, OPTION, etc.
+  exchange    String   @db.VarChar(10)
+  isActive    Boolean  @default(true)
+  isTradeable Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+  
+  @@map("instruments")
+  @@index([symbol])
+  @@index([isActive, isTradeable])
+}
+
+// ============================================================================
+// AUDIT & COMPLIANCE
+// ============================================================================
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actor      String?  @db.Uuid // User ID who performed action
+  action     String   @db.VarChar(100) // ORDER_PLACED, ACCOUNT_CREATED, etc.
+  resource   String   @db.VarChar(50)  // order, account, user, etc.
+  resourceId String?  @db.Uuid
+  metadata   Json?    // Additional context as JSON
+  requestId  String?  @db.Uuid // For request correlation
+  ipAddress  String?  @db.VarChar(45) // IPv4 or IPv6
+  userAgent  String?
+  timestamp  DateTime @default(now())
+  
+  user       User?    @relation(fields: [actor], references: [id], onDelete: SetNull)
+  
+  @@map("audit_logs")
+  @@index([actor])
+  @@index([action])
+  @@index([resource, resourceId])
+  @@index([timestamp])
+  @@index([requestId])
+}

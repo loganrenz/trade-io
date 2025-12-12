@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-profit: 16 185 129;
+    --color-loss: 239 68 68;
+  }
+}
