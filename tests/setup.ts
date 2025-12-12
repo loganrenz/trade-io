@@ -1,4 +1,8 @@
 import { beforeAll, afterAll, afterEach } from 'vitest';
+import { config } from 'dotenv';
+
+// Load environment variables for tests
+config();
 
 beforeAll(async () => {
   // Global setup before all tests
