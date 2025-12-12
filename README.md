@@ -62,6 +62,7 @@ See [Local Development Guide](./docs/testing/local-dev.md) for detailed setup.
 **Use this prompt**: "Please continue where we left off on the Trade.io project."
 
 **Then immediately**:
+
 1. Read [PROGRESS.md](./PROGRESS.md) to see current status and next issue
 2. Read [AGENTS.md](./AGENTS.md) for the complete workflow
 3. Pick up the next issue from [docs/issues/](./docs/issues/README.md)
@@ -74,6 +75,7 @@ See [Local Development Guide](./docs/testing/local-dev.md) for detailed setup.
 **Technology decisions are documented in [Architecture Decision Records (ADRs)](./docs/architecture/decisions/README.md)**
 
 ### Frontend
+
 - **Framework**: Nuxt 3 (Vue 3) with TypeScript - [ADR 0001](./docs/architecture/decisions/0001-frontend-framework.md)
 - **State Management**: Pinia
 - **UI Framework**: TailwindCSS + shadcn-vue
@@ -81,6 +83,7 @@ See [Local Development Guide](./docs/testing/local-dev.md) for detailed setup.
 - **Utilities**: VueUse
 
 ### Backend
+
 - **Runtime**: Node.js 20+
 - **Language**: TypeScript 5+ (strict mode)
 - **API Pattern**: tRPC - [ADR 0002](./docs/architecture/decisions/0002-backend-api-pattern.md)
@@ -89,12 +92,14 @@ See [Local Development Guide](./docs/testing/local-dev.md) for detailed setup.
 - **Logging**: Pino
 
 ### Database & Auth
+
 - **Database**: PostgreSQL 15+ hosted on Supabase - [ADR 0005](./docs/architecture/decisions/0005-database-hosting.md)
 - **ORM**: Prisma with full TypeScript support
 - **Auth**: Supabase Auth with Row-Level Security - [ADR 0004](./docs/architecture/decisions/0004-auth-provider.md)
 - **Connection Pooling**: PgBouncer (built into Supabase)
 
 ### Infrastructure
+
 - **Frontend Hosting**: Vercel
 - **Database Hosting**: Supabase
 - **CI/CD**: GitHub Actions
@@ -136,6 +141,7 @@ trade-io/
 ## Features
 
 ### Core Trading
+
 - ✅ **User Accounts**: Registration, authentication, profiles
 - ✅ **Trading Accounts**: Multiple accounts per user with role-based access
 - ✅ **Order Placement**: Market and limit orders with validation
@@ -145,12 +151,14 @@ trade-io/
 - ✅ **Transaction Ledger**: Double-entry bookkeeping for all trades
 
 ### Market Data
+
 - ✅ **Real-Time Quotes**: Live stock prices via market data provider
 - ✅ **Historical Data**: OHLCV bars for charting
 - ✅ **Instrument Search**: Search and filter tradeable symbols
 - ✅ **Market Hours**: Validation against trading sessions
 
 ### Risk & Compliance
+
 - ✅ **Buying Power Checks**: Prevent over-trading
 - ✅ **Position Limits**: Max position size enforcement
 - ✅ **Symbol Restrictions**: Admin-controlled trading halts
@@ -158,6 +166,7 @@ trade-io/
 - ✅ **Compliance Reports**: Transaction and activity reports
 
 ### Admin Tools
+
 - ✅ **User Management**: List, suspend, manage users
 - ✅ **Risk Controls**: Configure limits and restrictions
 - ✅ **System Monitoring**: Metrics and health checks
@@ -219,6 +228,7 @@ npm run db:studio
 ## Contributing
 
 ### For AI Agents
+
 1. Read [AGENTS.md](./AGENTS.md) thoroughly
 2. Pick an issue from [docs/issues/](./docs/issues/)
 3. Follow the implementation plan
@@ -226,6 +236,7 @@ npm run db:studio
 5. Submit PR using the template
 
 ### For Humans
+
 1. Review existing issues before creating new ones
 2. Use the issue template in `.github/ISSUE_TEMPLATE/`
 3. Follow the same workflow as agents
@@ -266,24 +277,28 @@ See [Issue Backlog](./docs/issues/README.md) for details.
 ## Roadmap
 
 ### v1.0 (MVP) - Q2 2024
+
 - ✅ Core trading functionality
 - ✅ Market data integration
 - ✅ Portfolio tracking
 - ✅ Basic admin tools
 
 ### v1.1 - Q3 2024
+
 - 🔄 WebSocket real-time updates
 - 🔄 Advanced charting
 - 🔄 Social features (leaderboards)
 - 🔄 Mobile responsive UI
 
 ### v2.0 - Q4 2024
+
 - 🔄 Options trading (paper)
 - 🔄 Strategy backtesting
 - 🔄 Algorithmic trading APIs
 - 🔄 Mobile apps (iOS, Android)
 
 ### Future
+
 - Multi-currency support
 - Cryptocurrency trading (paper)
 - Competition/tournament mode

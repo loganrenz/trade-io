@@ -3,6 +3,8 @@
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { auditService, AuditAction, auditLogEntrySchema } from '~/server/lib/audit';
+import { db } from '~/server/lib/db';
+import type { AuditLog } from '@prisma/client';
 
 // Mock the database
 vi.mock('~/server/lib/db', () => ({
@@ -28,8 +30,6 @@ vi.mock('~/server/lib/logger', () => ({
   },
 }));
 
-import { db } from '~/server/lib/db';
-
 describe('AuditService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -52,7 +52,7 @@ describe('AuditService', () => {
         id: '123e4567-e89b-12d3-a456-426614174003',
         timestamp: new Date(),
         ...entry,
-      } as any);
+      } as AuditLog);
 
       await auditService.log(entry);
 
@@ -86,7 +86,7 @@ describe('AuditService', () => {
         id: '123e4567-e89b-12d3-a456-426614174003',
         timestamp: new Date(),
         ...entry,
-      } as any);
+      } as AuditLog);
 
       await auditService.log(entry);
 
@@ -110,9 +110,7 @@ describe('AuditService', () => {
         resource: 'order',
       };
 
-      vi.mocked(db.auditLog.create).mockRejectedValue(
-        new Error('Database error')
-      );
+      vi.mocked(db.auditLog.create).mockRejectedValue(new Error('Database error'));
 
       // Should not throw
       await expect(auditService.log(entry)).resolves.toBeUndefined();
@@ -135,9 +133,10 @@ describe('AuditService', () => {
         requestId: null,
         ipAddress: null,
         userAgent: null,
-      } as any);
+      } as AuditLog);
 
       // Should not throw, but should log error
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await auditService.log(invalidEntry as any);
 
       // Database should not be called due to validation failure
@@ -163,7 +162,7 @@ describe('AuditService', () => {
       vi.mocked(db.$transaction).mockResolvedValue([
         { id: '1', timestamp: new Date() },
         { id: '2', timestamp: new Date() },
-      ] as any);
+      ] as AuditLog[]);
 
       await auditService.logBatch(entries);
 
@@ -178,9 +177,7 @@ describe('AuditService', () => {
         },
       ];
 
-      vi.mocked(db.$transaction).mockRejectedValue(
-        new Error('Transaction failed')
-      );
+      vi.mocked(db.$transaction).mockRejectedValue(new Error('Transaction failed'));
 
       // Should not throw
       await expect(auditService.logBatch(entries)).resolves.toBeUndefined();
@@ -198,7 +195,7 @@ describe('AuditService', () => {
         },
       ];
 
-      vi.mocked(db.auditLog.findMany).mockResolvedValue(mockLogs as any);
+      vi.mocked(db.auditLog.findMany).mockResolvedValue(mockLogs as AuditLog[]);
       vi.mocked(db.auditLog.count).mockResolvedValue(1);
 
       const result = await auditService.query({
@@ -249,9 +246,7 @@ describe('AuditService', () => {
     });
 
     it('should calculate hasMore correctly', async () => {
-      vi.mocked(db.auditLog.findMany).mockResolvedValue(
-        Array(10).fill({ id: '1' }) as any
-      );
+      vi.mocked(db.auditLog.findMany).mockResolvedValue(Array(10).fill({ id: '1' }) as AuditLog[]);
       vi.mocked(db.auditLog.count).mockResolvedValue(25);
 
       const result = await auditService.query({
@@ -285,7 +280,9 @@ describe('AuditService', () => {
         },
       ];
 
-      vi.mocked(db.auditLog.findMany).mockResolvedValue(mockHistory as any);
+      vi.mocked(db.auditLog.findMany).mockResolvedValue(
+        mockHistory as (AuditLog & { user: { id: string; email: string } | null })[]
+      );
 
       const result = await auditService.getResourceHistory(
         'order',

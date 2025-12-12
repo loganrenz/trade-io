@@ -133,9 +133,7 @@ export class AuditService {
   async logBatch(entries: AuditLogEntry[]): Promise<void> {
     try {
       // Validate all entries
-      const validated = entries.map((entry) =>
-        auditLogEntrySchema.parse(entry)
-      );
+      const validated = entries.map((entry) => auditLogEntrySchema.parse(entry));
 
       // Create all logs in a single transaction
       await db.$transaction(

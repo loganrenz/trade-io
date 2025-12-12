@@ -8,7 +8,7 @@ import { auditService } from '~/server/lib/audit';
 
 /**
  * Middleware to audit tRPC procedure calls
- * 
+ *
  * Usage:
  * ```typescript
  * export const auditedProcedure = publicProcedure.use(auditMiddleware({
@@ -41,9 +41,7 @@ export function auditMiddleware(config: {
     } finally {
       // Log audit entry after procedure completes (success or failure)
       const duration = Date.now() - startTime;
-      const resourceId = config.getResourceId
-        ? config.getResourceId(input)
-        : null;
+      const resourceId = config.getResourceId ? config.getResourceId(input) : null;
 
       const metadata: Record<string, unknown> = {
         path,
@@ -63,8 +61,7 @@ export function auditMiddleware(config: {
       if (error) {
         metadata.error = {
           message: error instanceof Error ? error.message : 'Unknown error',
-          code:
-            error instanceof TRPCError ? error.code : 'INTERNAL_SERVER_ERROR',
+          code: error instanceof TRPCError ? error.code : 'INTERNAL_SERVER_ERROR',
         };
       }
 

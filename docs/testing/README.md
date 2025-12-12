@@ -49,13 +49,14 @@ Testing strategy, local development setup, and CI pipeline documentation for Tra
 **Tools**: Vitest
 
 **Example**:
+
 ```typescript
 describe('calculatePnL', () => {
   it('should calculate positive PnL for profitable trade', () => {
     const pnl = calculatePnL({
       costBasis: 100,
       currentValue: 120,
-      quantity: 10
+      quantity: 10,
     });
     expect(pnl).toBe(200); // (120-100) * 10
   });
@@ -71,6 +72,7 @@ describe('calculatePnL', () => {
 **Tools**: Vitest + Supertest (or similar)
 
 **Example**:
+
 ```typescript
 describe('POST /api/orders', () => {
   it('should create order and return 201', async () => {
@@ -78,7 +80,7 @@ describe('POST /api/orders', () => {
       .post('/api/orders')
       .set('Authorization', `Bearer ${token}`)
       .send(validOrderPayload);
-      
+
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id');
   });
@@ -94,18 +96,19 @@ describe('POST /api/orders', () => {
 **Tools**: Playwright
 
 **Example**:
+
 ```typescript
 test('user can place market order', async ({ page }) => {
   await page.goto('/login');
   await page.fill('[name=email]', 'test@example.com');
   await page.fill('[name=password]', 'password123');
   await page.click('button[type=submit]');
-  
+
   await page.click('text=Trade');
   await page.fill('[name=symbol]', 'AAPL');
   await page.fill('[name=quantity]', '10');
   await page.click('text=Buy');
-  
+
   await expect(page.locator('text=Order submitted')).toBeVisible();
 });
 ```
@@ -228,8 +231,8 @@ Mock external APIs (market data providers):
 vi.mock('../lib/market-data-client', () => ({
   getQuote: vi.fn().mockResolvedValue({
     symbol: 'AAPL',
-    price: 150.00,
-  })
+    price: 150.0,
+  }),
 }));
 ```
 
@@ -270,7 +273,7 @@ test('order placement completes in < 500ms', async () => {
   const start = Date.now();
   await orderService.placeOrder(params);
   const duration = Date.now() - start;
-  
+
   expect(duration).toBeLessThan(500);
 });
 ```
@@ -282,7 +285,7 @@ Include security-focused tests:
 ```typescript
 test('should reject order for unauthorized account', async () => {
   const otherUserToken = await createTestUser();
-  
+
   await expect(
     request(app)
       .post('/api/orders')
@@ -295,6 +298,7 @@ test('should reject order for unauthorized account', async () => {
 ## Test Best Practices
 
 ### DO
+
 - ✅ Test behavior, not implementation
 - ✅ Use descriptive test names
 - ✅ Arrange, Act, Assert pattern
@@ -304,6 +308,7 @@ test('should reject order for unauthorized account', async () => {
 - ✅ Use factories for test data
 
 ### DON'T
+
 - ❌ Test framework internals
 - ❌ Depend on test execution order
 - ❌ Use real external services

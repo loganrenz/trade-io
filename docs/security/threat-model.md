@@ -7,6 +7,7 @@ This document identifies potential security threats to Trade.io and defines miti
 ## Assets to Protect
 
 ### Critical Assets
+
 1. **User Credentials**: Passwords, session tokens, API keys
 2. **Financial Data**: Account balances, transaction history
 3. **Personal Information**: Email addresses, names, profiles
@@ -27,18 +28,21 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Attacker gains access to user account.
 
 **Attack Vectors**:
+
 - Credential stuffing (reused passwords)
 - Phishing
 - Session hijacking
 - Brute force login
 
 **Impact**: HIGH
+
 - Access to user's portfolio
 - Ability to place/cancel orders
 - View transaction history
 - Modify account settings
 
 **Mitigations**:
+
 - ✅ Strong password requirements (min 12 chars, complexity)
 - ✅ Rate limiting on login (5 attempts per minute)
 - ✅ Email verification required
@@ -56,16 +60,19 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: User gains unauthorized elevated privileges.
 
 **Attack Vectors**:
+
 - IDOR (Insecure Direct Object Reference)
 - Missing authorization checks
 - Role manipulation
 
 **Impact**: HIGH
+
 - Access to other users' accounts
 - Ability to perform admin actions
 - Data theft or manipulation
 
 **Mitigations**:
+
 - ✅ Authorization checks on every endpoint
 - ✅ Resource ownership verification
 - ✅ Role-based access control (RBAC)
@@ -82,16 +89,19 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Attacker injects malicious SQL via user input.
 
 **Attack Vectors**:
+
 - Unvalidated user input in queries
 - String concatenation in SQL
 - Vulnerable ORM usage
 
 **Impact**: CRITICAL
+
 - Complete database compromise
 - Data theft or deletion
 - Privilege escalation
 
 **Mitigations**:
+
 - ✅ ORM usage (Prisma/Drizzle) with parameterized queries
 - ✅ Input validation with Zod
 - ✅ No raw SQL string concatenation
@@ -107,16 +117,19 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Attacker injects malicious JavaScript into pages.
 
 **Attack Vectors**:
+
 - Stored XSS (malicious data in database)
 - Reflected XSS (malicious data in URL)
 - DOM-based XSS
 
 **Impact**: HIGH
+
 - Session token theft
 - Phishing
 - Malicious actions as victim user
 
 **Mitigations**:
+
 - ✅ Framework auto-escaping (Vue/React)
 - ✅ Content Security Policy (CSP) headers
 - ✅ Input sanitization for user-generated content
@@ -132,15 +145,18 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Attacker tricks user into performing unwanted actions.
 
 **Attack Vectors**:
+
 - Malicious links/forms on external sites
 - Missing CSRF tokens
 
 **Impact**: MEDIUM
+
 - Unwanted order placement
 - Account modifications
 - Fund transfers (if implemented)
 
 **Mitigations**:
+
 - ✅ CSRF tokens on state-changing operations
 - ✅ SameSite cookie attribute
 - ✅ Custom headers (X-Requested-With)
@@ -156,14 +172,17 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: User accesses another user's resources via ID manipulation.
 
 **Attack Vectors**:
+
 - Predictable IDs in URLs/API calls
 - Missing ownership checks
 
 **Impact**: HIGH
+
 - Unauthorized data access
 - Data modification or deletion
 
 **Mitigations**:
+
 - ✅ UUIDs instead of sequential IDs (harder to guess)
 - ✅ Authorization checks on every resource access
 - ✅ Query filters by user/account ownership
@@ -179,15 +198,18 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Attacker overwhelms system with requests.
 
 **Attack Vectors**:
+
 - High-frequency API calls
 - Resource-intensive queries
 - Amplification attacks
 
 **Impact**: MEDIUM
+
 - Service degradation or outage
 - Increased infrastructure costs
 
 **Mitigations**:
+
 - ✅ Rate limiting per user/IP
 - ✅ Request throttling
 - ✅ Query complexity limits
@@ -204,15 +226,18 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Sensitive information leaked in logs, errors, or API responses.
 
 **Attack Vectors**:
+
 - Verbose error messages
 - Logging sensitive data
 - Excessive API responses
 
 **Impact**: MEDIUM
+
 - Information disclosure
 - Enables further attacks
 
 **Mitigations**:
+
 - ✅ Generic error messages to clients
 - ✅ Detailed errors logged server-side only
 - ✅ No passwords/tokens in logs
@@ -229,16 +254,19 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Vulnerable third-party packages.
 
 **Attack Vectors**:
+
 - Known CVEs in dependencies
 - Supply chain attacks
 - Malicious packages
 
 **Impact**: VARIES (can be CRITICAL)
+
 - Remote code execution
 - Data theft
 - System compromise
 
 **Mitigations**:
+
 - ✅ npm audit in CI/CD
 - ✅ Dependabot alerts enabled
 - ✅ Regular dependency updates
@@ -255,15 +283,18 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Attacker steals user's session.
 
 **Attack Vectors**:
+
 - XSS to steal session token
 - Network sniffing (if HTTP)
 - Session fixation
 
 **Impact**: HIGH
+
 - Complete account takeover
 - Unauthorized actions as victim
 
 **Mitigations**:
+
 - ✅ HTTPS only (TLS)
 - ✅ httpOnly cookies (prevent JS access)
 - ✅ Secure cookie attribute
@@ -281,16 +312,19 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Lack of audit trail hinders incident response.
 
 **Attack Vectors**:
+
 - Missing logs for critical actions
 - Log tampering
 - Insufficient log retention
 
 **Impact**: MEDIUM
+
 - Cannot detect breaches
 - Cannot investigate incidents
 - Compliance violations
 
 **Mitigations**:
+
 - ✅ Comprehensive audit logging
 - ✅ Append-only audit log table
 - ✅ Actor attribution for all actions
@@ -307,16 +341,19 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: User exploits paper trading simulation.
 
 **Attack Vectors**:
+
 - Front-running simulated fills
 - Exploiting deterministic execution
 - Unrealistic profit claims
 
 **Impact**: LOW (no real money)
+
 - Unfair competition advantages
 - Misleading performance claims
 - Reputational damage
 
 **Mitigations**:
+
 - ✅ Realistic execution simulation (slippage, delays)
 - ✅ Market data cannot be predicted in advance
 - ✅ Audit trail of all orders/fills
@@ -332,16 +369,19 @@ This document identifies potential security threats to Trade.io and defines miti
 **Description**: Malicious or compromised admin account.
 
 **Attack Vectors**:
+
 - Admin account compromise
 - Malicious employee/contractor
 - Privilege abuse
 
 **Impact**: CRITICAL
+
 - Complete system access
 - Data theft or manipulation
 - Service disruption
 
 **Mitigations**:
+
 - ✅ Audit logging of all admin actions
 - ✅ Least privilege for admin accounts
 - ✅ Multi-factor authentication for admins (future)
@@ -355,23 +395,24 @@ This document identifies potential security threats to Trade.io and defines miti
 
 ## Threat Summary Matrix
 
-| ID  | Threat | Impact | Likelihood | Residual Risk | Priority |
-|-----|--------|--------|-----------|--------------|----------|
-| T1  | Unauthorized Access | HIGH | MEDIUM | MEDIUM | HIGH |
-| T2  | Privilege Escalation | HIGH | LOW | LOW | HIGH |
-| T3  | SQL Injection | CRITICAL | LOW | VERY LOW | HIGH |
-| T4  | XSS | HIGH | LOW | LOW | MEDIUM |
-| T5  | CSRF | MEDIUM | LOW | LOW | MEDIUM |
-| T6  | IDOR | HIGH | LOW | LOW | HIGH |
-| T7  | API Abuse/DDoS | MEDIUM | MEDIUM | MEDIUM | MEDIUM |
-| T8  | Data Exposure | MEDIUM | LOW | LOW | MEDIUM |
-| T9  | Vulnerable Deps | VARIES | MEDIUM | MEDIUM | HIGH |
-| T10 | Session Hijacking | HIGH | LOW | LOW | HIGH |
-| T11 | Insufficient Logging | MEDIUM | LOW | LOW | MEDIUM |
-| T12 | Market Manipulation | LOW | MEDIUM | MEDIUM | LOW |
-| T13 | Insider Threats | CRITICAL | LOW | MEDIUM | HIGH |
+| ID  | Threat               | Impact   | Likelihood | Residual Risk | Priority |
+| --- | -------------------- | -------- | ---------- | ------------- | -------- |
+| T1  | Unauthorized Access  | HIGH     | MEDIUM     | MEDIUM        | HIGH     |
+| T2  | Privilege Escalation | HIGH     | LOW        | LOW           | HIGH     |
+| T3  | SQL Injection        | CRITICAL | LOW        | VERY LOW      | HIGH     |
+| T4  | XSS                  | HIGH     | LOW        | LOW           | MEDIUM   |
+| T5  | CSRF                 | MEDIUM   | LOW        | LOW           | MEDIUM   |
+| T6  | IDOR                 | HIGH     | LOW        | LOW           | HIGH     |
+| T7  | API Abuse/DDoS       | MEDIUM   | MEDIUM     | MEDIUM        | MEDIUM   |
+| T8  | Data Exposure        | MEDIUM   | LOW        | LOW           | MEDIUM   |
+| T9  | Vulnerable Deps      | VARIES   | MEDIUM     | MEDIUM        | HIGH     |
+| T10 | Session Hijacking    | HIGH     | LOW        | LOW           | HIGH     |
+| T11 | Insufficient Logging | MEDIUM   | LOW        | LOW           | MEDIUM   |
+| T12 | Market Manipulation  | LOW      | MEDIUM     | MEDIUM        | LOW      |
+| T13 | Insider Threats      | CRITICAL | LOW        | MEDIUM        | HIGH     |
 
 **Legend**:
+
 - ✅ Implemented
 - 🔄 Planned/Future
 - Impact: CRITICAL > HIGH > MEDIUM > LOW

@@ -5,7 +5,7 @@
 import { z } from 'zod';
 import { router, publicProcedure } from '../trpc';
 import { auditService } from '~/server/lib/audit';
-import { ForbiddenError } from '~/server/errors';
+// import { ForbiddenError } from '~/server/errors'; // TODO: Use when auth is implemented
 
 export const auditRouter = router({
   /**

@@ -35,13 +35,16 @@ Use this exact prompt to continue work:
 
 ## Current Status Summary
 
-**Completed**: 
+**Completed**:
+
 - ✅ Issue 0001 - Repository baseline (package.json, TypeScript, .gitignore, etc.)
 
 **Next Up**:
+
 - 📋 Issue 0002 - Technology Stack Decisions (choose frameworks, document ADRs)
 
 **After That**:
+
 - 📋 Issue 0003 - Development Environment Setup (Docker Compose, local DB)
 - 📋 Issue 0004 - Linting and Formatting (ESLint, Prettier)
 - ... and 66 more issues through Phase 7

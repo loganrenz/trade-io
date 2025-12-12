@@ -1,14 +1,17 @@
 ## Description
+
 <!-- Provide a clear description of the changes -->
 
-
-
 ## Related Issue
+
 <!-- Link to the issue this PR addresses -->
+
 Closes #XXXX
 
 ## Type of Change
+
 <!-- Mark the relevant option with an 'x' -->
+
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
@@ -19,21 +22,26 @@ Closes #XXXX
 - [ ] CI/CD change
 
 ## Changes Made
+
 <!-- List the key changes -->
-- 
-- 
-- 
+
+-
+-
+-
 
 ## Testing
+
 <!-- Describe the tests you ran -->
 
 ### Tests Added
+
 - [ ] Unit tests
 - [ ] Integration tests
 - [ ] E2E tests
 - [ ] No tests needed (documentation only)
 
 ### Test Results
+
 ```
 # Paste test results here
 npm test
@@ -41,12 +49,15 @@ npm test
 ```
 
 ### Manual Testing
+
 <!-- Describe manual testing performed -->
+
 - [ ] Tested locally
 - [ ] Tested all edge cases
 - [ ] Tested error scenarios
 
 ## Security Checklist
+
 <!-- ALL items must be checked before merging -->
 
 - [ ] **No secrets committed** (API keys, passwords, tokens)
@@ -115,7 +126,6 @@ OR
 
 <!-- If performance impact, describe: -->
 
-
 ## Deployment Notes
 
 - [ ] **No special deployment steps** needed
@@ -129,31 +139,33 @@ OR
 - [ ] **Feature flags** to enable/disable
 
 ### Deployment Checklist
+
 <!-- If special steps needed -->
-1. 
-2. 
-3. 
+
+1.
+2.
+3.
 
 ## Rollback Plan
 
 <!-- How to rollback if something goes wrong -->
+
 1. Revert this PR: `git revert <commit-sha>`
 2. Rollback migrations: `npm run db:migrate:rollback`
-3. 
+3.
 
 ## Screenshots
+
 <!-- If applicable, add screenshots of UI changes -->
 
-
-
 ## Additional Context
+
 <!-- Any other context, concerns, or notes -->
-
-
 
 ---
 
 ## Reviewer Checklist
+
 <!-- For reviewers -->
 
 - [ ] Code changes align with issue requirements
@@ -168,6 +180,7 @@ OR
 - [ ] Ready to merge
 
 ## Pre-Merge Checklist
+
 <!-- Final verification before merge -->
 
 - [ ] All CI checks passing

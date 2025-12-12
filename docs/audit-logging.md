@@ -82,6 +82,7 @@ const history = await auditService.getResourceHistory('order', orderId);
 The service defines standard actions for consistency:
 
 ### User Actions
+
 - `USER_CREATED` - New user account created
 - `USER_UPDATED` - User profile updated
 - `USER_DELETED` - User account deleted (soft delete)
@@ -89,6 +90,7 @@ The service defines standard actions for consistency:
 - `USER_LOGOUT` - User logged out
 
 ### Account Actions
+
 - `ACCOUNT_CREATED` - Trading account created
 - `ACCOUNT_UPDATED` - Account settings updated
 - `ACCOUNT_DELETED` - Account closed
@@ -96,6 +98,7 @@ The service defines standard actions for consistency:
 - `ACCOUNT_ACTIVATED` - Account reactivated
 
 ### Order Actions
+
 - `ORDER_PLACED` - New order submitted
 - `ORDER_MODIFIED` - Order modified
 - `ORDER_CANCELLED` - Order cancelled by user
@@ -104,11 +107,13 @@ The service defines standard actions for consistency:
 - `ORDER_EXPIRED` - Order expired (e.g., DAY order at EOD)
 
 ### Position Actions
+
 - `POSITION_OPENED` - New position established
 - `POSITION_CLOSED` - Position fully closed
 - `POSITION_UPDATED` - Position quantity/cost updated
 
 ### Ledger Actions
+
 - `DEPOSIT` - Cash deposited
 - `WITHDRAWAL` - Cash withdrawn
 - `TRADE_SETTLED` - Trade settled in ledger
@@ -116,6 +121,7 @@ The service defines standard actions for consistency:
 - `ADJUSTMENT` - Manual ledger adjustment
 
 ### Security Actions
+
 - `UNAUTHORIZED_ACCESS` - Unauthorized access attempt
 - `PERMISSION_DENIED` - Permission check failed
 - `RATE_LIMIT_EXCEEDED` - Rate limit hit
@@ -130,7 +136,7 @@ import { auditService, AuditAction } from '~/server/lib/audit';
 export async function placeOrder(params, context) {
   // Execute business logic
   const order = await db.order.create({ data: params });
-  
+
   // Audit the action
   await auditService.log({
     actor: context.userId,
@@ -146,7 +152,7 @@ export async function placeOrder(params, context) {
     ipAddress: context.ipAddress,
     userAgent: context.userAgent,
   });
-  
+
   return order;
 }
 ```
@@ -158,16 +164,13 @@ import { auditFromContext, AuditAction } from '~/server/lib/audit';
 
 export async function placeOrder(params, ctx) {
   const order = await db.order.create({ data: params });
-  
+
   // Simplified with helper function
-  await auditFromContext(
-    AuditAction.ORDER_PLACED,
-    'order',
-    order.id,
-    ctx,
-    { symbol: params.symbol, quantity: params.quantity }
-  );
-  
+  await auditFromContext(AuditAction.ORDER_PLACED, 'order', order.id, ctx, {
+    symbol: params.symbol,
+    quantity: params.quantity,
+  });
+
   return order;
 }
 ```
@@ -184,18 +187,16 @@ const auditedProcedure = publicProcedure.use(
     action: AuditAction.ORDER_PLACED,
     resource: 'order',
     getResourceId: (input: any) => input.orderId,
-    includeInput: true,  // Log the input params
+    includeInput: true, // Log the input params
   })
 );
 
 // Use in router
 export const ordersRouter = router({
-  place: auditedProcedure
-    .input(orderPlacementSchema)
-    .mutation(async ({ input, ctx }) => {
-      // Automatically audited by middleware
-      return placeOrder(input, ctx);
-    }),
+  place: auditedProcedure.input(orderPlacementSchema).mutation(async ({ input, ctx }) => {
+    // Automatically audited by middleware
+    return placeOrder(input, ctx);
+  }),
 });
 ```
 
@@ -208,7 +209,7 @@ export async function settleTrade(execution) {
     db.ledgerEntry.create({ data: ledgerData }),
     db.position.upsert({ where: { ... }, create: { ... }, update: { ... } }),
   ]);
-  
+
   // Audit multiple related actions atomically
   await auditService.logBatch([
     {

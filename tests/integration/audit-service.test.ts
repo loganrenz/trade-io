@@ -95,12 +95,8 @@ describe('AuditService Integration Tests', () => {
       });
 
       expect(logs).toHaveLength(1);
-      expect(logs[0].timestamp.getTime()).toBeGreaterThanOrEqual(
-        beforeTime.getTime()
-      );
-      expect(logs[0].timestamp.getTime()).toBeLessThanOrEqual(
-        afterTime.getTime()
-      );
+      expect(logs[0].timestamp.getTime()).toBeGreaterThanOrEqual(beforeTime.getTime());
+      expect(logs[0].timestamp.getTime()).toBeLessThanOrEqual(afterTime.getTime());
     });
   });
 
@@ -224,9 +220,9 @@ describe('AuditService Integration Tests', () => {
       });
 
       for (let i = 1; i < result.logs.length; i++) {
-        expect(
-          result.logs[i - 1].timestamp.getTime()
-        ).toBeGreaterThanOrEqual(result.logs[i].timestamp.getTime());
+        expect(result.logs[i - 1].timestamp.getTime()).toBeGreaterThanOrEqual(
+          result.logs[i].timestamp.getTime()
+        );
       }
     });
   });
@@ -258,9 +254,7 @@ describe('AuditService Integration Tests', () => {
       expect(history).toHaveLength(2);
       expect(history[0].action).toBe(AuditAction.ORDER_PLACED);
       expect(history[1].action).toBe(AuditAction.ORDER_FILLED);
-      expect(history[0].timestamp.getTime()).toBeLessThan(
-        history[1].timestamp.getTime()
-      );
+      expect(history[0].timestamp.getTime()).toBeLessThan(history[1].timestamp.getTime());
     });
 
     it('should include user information', async () => {
@@ -273,10 +267,7 @@ describe('AuditService Integration Tests', () => {
         resourceId,
       });
 
-      const history = await auditService.getResourceHistory(
-        'account',
-        resourceId
-      );
+      const history = await auditService.getResourceHistory('account', resourceId);
 
       expect(history).toHaveLength(1);
       expect(history[0].user).toBeDefined();
@@ -285,10 +276,7 @@ describe('AuditService Integration Tests', () => {
     });
 
     it('should return empty array for non-existent resource', async () => {
-      const history = await auditService.getResourceHistory(
-        'order',
-        crypto.randomUUID()
-      );
+      const history = await auditService.getResourceHistory('order', crypto.randomUUID());
 
       expect(history).toHaveLength(0);
     });

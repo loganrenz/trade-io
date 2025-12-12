@@ -6,11 +6,13 @@ config();
 
 beforeAll(async () => {
   // Global setup before all tests
+  // eslint-disable-next-line no-console
   console.log('Test suite starting...');
 });
 
 afterAll(async () => {
   // Global teardown after all tests
+  // eslint-disable-next-line no-console
   console.log('Test suite complete.');
 });
 

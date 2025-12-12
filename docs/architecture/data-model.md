@@ -3,6 +3,7 @@
 ## Overview
 
 This document defines the complete database schema for Trade.io. The schema is designed for:
+
 - **Data Integrity**: Foreign keys, constraints, proper types
 - **Auditability**: Timestamps, soft deletes, immutable audit log
 - **Performance**: Appropriate indexes for common queries
@@ -11,6 +12,7 @@ This document defines the complete database schema for Trade.io. The schema is d
 ## Schema Conventions
 
 ### Naming
+
 - **Tables**: `snake_case`, plural nouns (`users`, `orders`)
 - **Columns**: `snake_case` (`created_at`, `account_id`)
 - **Primary Keys**: `id` (UUID)
@@ -18,12 +20,15 @@ This document defines the complete database schema for Trade.io. The schema is d
 - **Timestamps**: `created_at`, `updated_at`, `deleted_at`
 
 ### Common Columns
+
 Every table includes:
+
 - `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
 - `created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
 - `updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
 
 Many tables include:
+
 - `deleted_at TIMESTAMPTZ` (for soft deletes)
 
 ## Entity Relationship Diagram
@@ -68,7 +73,7 @@ CREATE TABLE users (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at TIMESTAMPTZ,
-  
+
   CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$')
 );
 
@@ -91,7 +96,7 @@ CREATE TABLE accounts (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at TIMESTAMPTZ,
-  
+
   CHECK (account_type IN ('CASH', 'MARGIN')),
   CHECK (status IN ('ACTIVE', 'SUSPENDED', 'CLOSED')),
   CHECK (initial_balance >= 0)
@@ -112,7 +117,7 @@ CREATE TABLE account_members (
   role VARCHAR(20) NOT NULL DEFAULT 'MEMBER', -- 'OWNER', 'ADMIN', 'TRADER', 'VIEWER'
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   UNIQUE(account_id, user_id),
   CHECK (role IN ('OWNER', 'ADMIN', 'TRADER', 'VIEWER'))
 );
@@ -122,6 +127,7 @@ CREATE INDEX idx_account_members_account_id ON account_members(account_id);
 ```
 
 **Roles:**
+
 - **OWNER**: Full control, can delete account
 - **ADMIN**: Manage members, configure settings
 - **TRADER**: Place/cancel orders, view portfolio
@@ -140,7 +146,7 @@ CREATE TABLE sessions (
   ip_address INET,
   user_agent TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (expires_at > created_at)
 );
 
@@ -169,7 +175,7 @@ CREATE TABLE instruments (
   metadata JSONB, -- Additional symbol info
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (asset_type IN ('STOCK', 'ETF', 'OPTION', 'CRYPTO')),
   CHECK (min_order_size > 0)
 );
@@ -192,7 +198,7 @@ CREATE TABLE quotes (
   last DECIMAL(20, 8),
   volume BIGINT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (bid >= 0),
   CHECK (ask >= 0),
   CHECK (last >= 0),
@@ -221,7 +227,7 @@ CREATE TABLE bars (
   close DECIMAL(20, 8) NOT NULL,
   volume BIGINT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   UNIQUE(instrument_id, timeframe, timestamp),
   CHECK (high >= low),
   CHECK (high >= open),
@@ -281,7 +287,7 @@ CREATE TABLE orders (
   submitted_by UUID NOT NULL REFERENCES users(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (side IN ('BUY', 'SELL')),
   CHECK (order_type IN ('MARKET', 'LIMIT', 'STOP', 'STOP_LIMIT')),
   CHECK (time_in_force IN ('DAY', 'GTC', 'IOC', 'FOK')),
@@ -313,7 +319,7 @@ CREATE TABLE order_events (
   new_status VARCHAR(20) NOT NULL,
   metadata JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (event_type IN ('CREATED', 'ACCEPTED', 'PARTIAL_FILL', 'FILLED', 'CANCELLED', 'REJECTED', 'EXPIRED'))
 );
 
@@ -337,7 +343,7 @@ CREATE TABLE executions (
   commission DECIMAL(20, 2) NOT NULL DEFAULT 0,
   executed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (side IN ('BUY', 'SELL')),
   CHECK (quantity > 0),
   CHECK (price > 0),
@@ -363,7 +369,7 @@ CREATE TABLE positions (
   average_cost DECIMAL(20, 8) NOT NULL,
   realized_pnl DECIMAL(20, 2) NOT NULL DEFAULT 0,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   UNIQUE(account_id, instrument_id),
   CHECK (quantity != 0) -- No zero positions
 );
@@ -389,7 +395,7 @@ CREATE TABLE ledger_accounts (
   name VARCHAR(255) NOT NULL,
   currency VARCHAR(3) NOT NULL DEFAULT 'USD',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   UNIQUE(account_id, subtype),
   CHECK (account_type IN ('ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE'))
 );
@@ -398,6 +404,7 @@ CREATE INDEX idx_ledger_accounts_account_id ON ledger_accounts(account_id);
 ```
 
 **Common ledger accounts per trading account:**
+
 - **ASSET:CASH** - Cash balance
 - **ASSET:SECURITIES** - Value of holdings
 - **EQUITY:INITIAL** - Initial deposit
@@ -420,7 +427,7 @@ CREATE TABLE ledger_entries (
   reference_type VARCHAR(50), -- 'EXECUTION', 'DEPOSIT', 'WITHDRAWAL', 'DIVIDEND'
   reference_id UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (entry_type IN ('DEBIT', 'CREDIT')),
   CHECK (amount > 0)
 );
@@ -449,7 +456,7 @@ CREATE TABLE risk_limits (
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK ((account_id IS NOT NULL) OR (user_id IS NOT NULL)),
   CHECK (limit_value > 0)
 );
@@ -472,7 +479,7 @@ CREATE TABLE symbol_restrictions (
   ends_at TIMESTAMPTZ,
   created_by UUID REFERENCES users(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (restriction_type IN ('HALT', 'CLOSE_ONLY', 'REDUCED')),
   CHECK (ends_at IS NULL OR ends_at > starts_at)
 );
@@ -511,6 +518,7 @@ CREATE INDEX idx_audit_log_request_id ON audit_log(request_id);
 ## Indexes Summary
 
 All foreign keys have indexes. Additional indexes for:
+
 - Common query patterns (account orders, user positions)
 - Timestamp-based queries (order history, audit log)
 - Unique constraints (email, idempotency keys)
@@ -554,6 +562,7 @@ CREATE POLICY "users_own_orders" ON orders
 ## Next Steps
 
 See individual phase issues for:
+
 1. Creating initial migration files
 2. Setting up ORM (Prisma/Drizzle)
 3. Implementing RLS policies (if Supabase)

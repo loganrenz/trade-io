@@ -220,7 +220,7 @@ describe('Database Migration - Initial Schema', () => {
           side: 'BUY',
           quantity: 50,
           orderType: 'LIMIT',
-          limitPrice: 250.50,
+          limitPrice: 250.5,
           idempotencyKey: 'limit-order-1',
         },
       });
@@ -267,7 +267,7 @@ describe('Database Migration - Initial Schema', () => {
           accountId: testAccount.id,
           symbol: 'GOOGL',
           quantity: 50,
-          averageCost: 140.00,
+          averageCost: 140.0,
         },
       });
 
@@ -277,7 +277,7 @@ describe('Database Migration - Initial Schema', () => {
             accountId: testAccount.id,
             symbol: 'GOOGL',
             quantity: 25,
-            averageCost: 145.00,
+            averageCost: 145.0,
           },
         })
       ).rejects.toThrow(/Unique constraint/);
@@ -307,8 +307,8 @@ describe('Database Migration - Initial Schema', () => {
         data: {
           accountId: testAccount.id,
           entryType: 'DEPOSIT',
-          cashAmount: 10000.00,
-          balanceAfter: 110000.00,
+          cashAmount: 10000.0,
+          balanceAfter: 110000.0,
           description: 'Initial deposit',
         },
       });
@@ -336,8 +336,8 @@ describe('Database Migration - Initial Schema', () => {
           entryType: 'TRADE',
           symbol: 'AAPL',
           quantity: 10,
-          cashAmount: -1500.00,
-          balanceAfter: 98500.00,
+          cashAmount: -1500.0,
+          balanceAfter: 98500.0,
           description: 'Bought 10 shares of AAPL',
           referenceId: order.id,
         },
@@ -489,8 +489,8 @@ describe('Database Migration - Initial Schema', () => {
           symbol: 'AAPL',
           side: 'BUY',
           quantity: 100,
-          price: 150.50,
-          commission: 1.00,
+          price: 150.5,
+          commission: 1.0,
         },
       });
 
@@ -531,7 +531,7 @@ describe('Database Migration - Initial Schema', () => {
           symbol: 'MSFT',
           side: 'SELL',
           quantity: 50,
-          price: 350.00,
+          price: 350.0,
         },
       });
 
@@ -553,10 +553,7 @@ describe('Database Migration - Initial Schema', () => {
         data: {
           email: 'relation-test@example.com',
           accounts: {
-            create: [
-              { name: 'Account 1' },
-              { name: 'Account 2' },
-            ],
+            create: [{ name: 'Account 1' }, { name: 'Account 2' }],
           },
         },
         include: {
@@ -593,7 +590,7 @@ describe('Database Migration - Initial Schema', () => {
             create: {
               symbol: 'AAPL',
               quantity: 100,
-              averageCost: 150.00,
+              averageCost: 150.0,
             },
           },
         },

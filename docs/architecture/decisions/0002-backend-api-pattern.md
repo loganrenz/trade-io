@@ -1,10 +1,13 @@
 # ADR 0002: Backend API Pattern Selection
 
 ## Status
+
 **Accepted** - 2025-12-12
 
 ## Context
+
 We need to choose an API pattern for communication between frontend and backend. Requirements include:
+
 - **Type safety**: End-to-end type safety from database to UI
 - **Developer experience**: Minimal boilerplate, clear errors
 - **Performance**: Efficient data transfer, request batching
@@ -16,11 +19,13 @@ We need to choose an API pattern for communication between frontend and backend.
 The platform will have dozens of endpoints across multiple domains (users, accounts, orders, positions, market data, admin).
 
 ## Decision
+
 **We will use tRPC as our API pattern.**
 
 ## Rationale
 
 ### Why tRPC
+
 1. **End-to-end type safety**: TypeScript types automatically shared between client and server
 2. **No code generation**: Types inferred directly from backend procedures
 3. **Excellent DX**: Autocomplete, type errors, and refactoring support in IDE
@@ -32,6 +37,7 @@ The platform will have dozens of endpoints across multiple domains (users, accou
 9. **Perfect for TypeScript monorepos**: Shared types without import/export
 
 ### Why tRPC over REST
+
 1. **No manual type definitions**: REST requires maintaining OpenAPI specs or duplicating types
 2. **Less boilerplate**: No need for separate DTOs, validators, and response types
 3. **Better error messages**: TypeScript errors for invalid API calls at compile time
@@ -41,13 +47,16 @@ The platform will have dozens of endpoints across multiple domains (users, accou
 ### Alternatives Considered
 
 #### REST with Express + OpenAPI
+
 **Pros:**
+
 - Industry standard, widely understood
 - Language-agnostic (can be consumed by non-TypeScript clients)
 - Mature tooling (Postman, Swagger UI)
 - Standard HTTP semantics (GET, POST, PUT, DELETE)
 
 **Cons:**
+
 - Manual type synchronization between frontend and backend
 - Requires OpenAPI spec generation or manual maintenance
 - More boilerplate (controllers, DTOs, response mapping)
@@ -57,13 +66,16 @@ The platform will have dozens of endpoints across multiple domains (users, accou
 **Decision:** Type safety and DX gains outweigh REST's standardization benefits for a TypeScript monorepo.
 
 #### GraphQL with Apollo
+
 **Pros:**
+
 - Strong typing with schema-first approach
 - Flexible queries (avoid over-fetching)
 - Real-time with subscriptions
 - Mature ecosystem
 
 **Cons:**
+
 - Significant complexity overhead (schema definition, resolvers, code generation)
 - N+1 query problem requires careful dataloader setup
 - Overkill for straightforward CRUD operations
@@ -73,12 +85,15 @@ The platform will have dozens of endpoints across multiple domains (users, accou
 **Decision:** GraphQL's flexibility isn't needed for our use case. tRPC provides similar type safety with less complexity.
 
 #### gRPC
+
 **Pros:**
+
 - High performance binary protocol
 - Strong typing with Protocol Buffers
 - Excellent for microservices
 
 **Cons:**
+
 - Not browser-native (requires grpc-web proxy)
 - More complex setup than HTTP/JSON
 - Steeper learning curve
@@ -89,6 +104,7 @@ The platform will have dozens of endpoints across multiple domains (users, accou
 ## Consequences
 
 ### Positive
+
 - **Type safety everywhere**: Database → tRPC → Frontend with full autocomplete
 - **Rapid development**: No API documentation to maintain, types are self-documenting
 - **Fewer bugs**: Invalid API calls caught at compile time
@@ -97,6 +113,7 @@ The platform will have dozens of endpoints across multiple domains (users, accou
 - **Real-time ready**: WebSocket subscriptions for order updates and price feeds
 
 ### Negative
+
 - **TypeScript only**: Cannot easily consume API from non-TypeScript clients (mobile apps, Python scripts)
 - **Monorepo requirement**: Client and server must share TypeScript types
 - **Less standardized**: Smaller ecosystem than REST or GraphQL
@@ -104,18 +121,21 @@ The platform will have dozens of endpoints across multiple domains (users, accou
 - **Debugging**: Network tab shows batched requests, not individual calls
 
 ### Neutral
+
 - **Deployment**: Requires Node.js runtime (can't use serverless edge functions for all operations)
 - **Caching**: Different caching strategy than RESTful resources
 
 ## Implementation Notes
 
 ### Project Setup
+
 ```bash
 npm install @trpc/server @trpc/client @trpc/react-query
 npm install zod
 ```
 
 ### Backend Structure
+
 ```typescript
 // server/trpc/trpc.ts - tRPC instance and middleware
 import { initTRPC } from '@trpc/server';
@@ -127,8 +147,7 @@ const t = initTRPC.context<Context>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -183,6 +202,7 @@ export const ordersRouter = router({
 ```
 
 ### Frontend Usage
+
 ```typescript
 // composables/useOrders.ts
 import { useTRPCClient } from './useTRPC';
@@ -214,6 +234,7 @@ export function useOrders(accountId: string) {
 ```
 
 ### Router Composition
+
 ```typescript
 // server/trpc/root.ts
 import { router } from './trpc';
@@ -235,6 +256,7 @@ export type AppRouter = typeof appRouter;
 ```
 
 ### Middleware Patterns
+
 ```typescript
 // Auth middleware
 const authMiddleware = t.middleware(async ({ ctx, next }) => {
@@ -248,14 +270,14 @@ const authMiddleware = t.middleware(async ({ ctx, next }) => {
 const auditMiddleware = t.middleware(async ({ ctx, path, type, next }) => {
   const start = Date.now();
   const result = await next();
-  
+
   await auditLog.create({
     actor: ctx.userId,
     action: `${type.toUpperCase()}_${path}`,
     duration: Date.now() - start,
     requestId: ctx.requestId,
   });
-  
+
   return result;
 });
 ```
@@ -277,18 +299,22 @@ export default createNuxtApiHandler({
 ```
 
 ## Related Decisions
+
 - [ADR 0001: Frontend Framework](./0001-frontend-framework.md) - Nuxt 3 with TypeScript
 - [ADR 0003: Database ORM](./0003-database-orm.md) - Prisma for type-safe database access
 - [ADR 0004: Auth Provider](./0004-auth-provider.md) - Authentication integration
 
 ## References
+
 - [tRPC Documentation](https://trpc.io/docs)
 - [tRPC with Nuxt](https://trpc.io/docs/client/nuxt)
 - [Zod Validation](https://zod.dev/)
 - [tRPC vs REST vs GraphQL](https://trpc.io/docs/concepts)
 
 ## Review Date
+
 This decision should be reviewed in **6 months (June 2026)** or when:
+
 - Need to support non-TypeScript clients becomes critical
 - tRPC limitations impact feature development
 - Alternative solutions (e.g., TypeScript-first GraphQL) mature significantly

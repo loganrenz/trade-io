@@ -2,7 +2,6 @@
  * Health Check Router
  * Provides system health and readiness endpoints
  */
-import { z } from 'zod';
 import { router, publicProcedure } from '../trpc';
 import { db } from '../../lib/db';
 
