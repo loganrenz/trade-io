@@ -1,0 +1,55 @@
+{
+  "name": "trade-io",
+  "version": "0.1.0",
+  "description": "Production-grade paper trading platform for learning and competition",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "echo 'Dev server not yet configured'",
+    "build": "echo 'Build not yet configured'",
+    "start": "echo 'Start not yet configured'",
+    "test": "echo 'Tests not yet configured'",
+    "test:unit": "echo 'Unit tests not yet configured'",
+    "test:integration": "echo 'Integration tests not yet configured'",
+    "test:e2e": "echo 'E2E tests not yet configured'",
+    "test:coverage": "echo 'Coverage not yet configured'",
+    "lint": "echo 'Linting not yet configured'",
+    "lint:fix": "echo 'Lint fix not yet configured'",
+    "format": "echo 'Formatting not yet configured'",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "echo 'DB generate not yet configured'",
+    "db:migrate": "echo 'DB migrate not yet configured'",
+    "db:migrate:create": "echo 'DB migrate create not yet configured'",
+    "db:migrate:rollback": "echo 'DB migrate rollback not yet configured'",
+    "db:seed": "echo 'DB seed not yet configured'",
+    "db:studio": "echo 'DB studio not yet configured'",
+    "db:reset": "echo 'DB reset not yet configured'"
+  },
+  "keywords": [
+    "trading",
+    "paper-trading",
+    "stocks",
+    "portfolio",
+    "finance",
+    "investment",
+    "education"
+  ],
+  "author": "Logan Renz",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loganrenz/trade-io.git"
+  },
+  "bugs": {
+    "url": "https://github.com/loganrenz/trade-io/issues"
+  },
+  "homepage": "https://github.com/loganrenz/trade-io#readme",
+  "devDependencies": {
+    "@types/node": "^20.19.26",
+    "typescript": "^5.9.3"
+  }
+}
