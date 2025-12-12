@@ -2,9 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   ValidationError,
   AuthenticationError,
-  ForbiddenError,
   NotFoundError,
-  ConflictError,
   RateLimitError,
   InternalServerError,
 } from '../../../server/errors/base';
