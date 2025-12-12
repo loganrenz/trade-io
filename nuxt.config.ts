@@ -10,7 +10,7 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
-    typeCheck: true,
+    typeCheck: false, // Type checking done separately via npm run typecheck
     shim: false,
   },
 
