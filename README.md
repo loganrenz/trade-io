@@ -71,29 +71,34 @@ See [Local Development Guide](./docs/testing/local-dev.md) for detailed setup.
 
 ## Technology Stack
 
+**Technology decisions are documented in [Architecture Decision Records (ADRs)](./docs/architecture/decisions/README.md)**
+
 ### Frontend
-- **Framework**: Nuxt 3 (Vue 3) with TypeScript
-- **UI**: TailwindCSS + shadcn-vue
-- **State**: Pinia
-- **Forms**: VeeValidate + Zod
+- **Framework**: Nuxt 3 (Vue 3) with TypeScript - [ADR 0001](./docs/architecture/decisions/0001-frontend-framework.md)
+- **State Management**: Pinia
+- **UI Framework**: TailwindCSS + shadcn-vue
+- **Form Validation**: VeeValidate + Zod
+- **Utilities**: VueUse
 
 ### Backend
 - **Runtime**: Node.js 20+
 - **Language**: TypeScript 5+ (strict mode)
-- **API**: tRPC (type-safe RPC)
+- **API Pattern**: tRPC - [ADR 0002](./docs/architecture/decisions/0002-backend-api-pattern.md)
 - **Validation**: Zod
+- **ORM**: Prisma - [ADR 0003](./docs/architecture/decisions/0003-database-orm.md)
 - **Logging**: Pino
 
-### Database
-- **Primary**: PostgreSQL 15+
-- **ORM**: Prisma
-- **Caching**: Redis
-- **Hosting**: Supabase (includes auth)
+### Database & Auth
+- **Database**: PostgreSQL 15+ hosted on Supabase - [ADR 0005](./docs/architecture/decisions/0005-database-hosting.md)
+- **ORM**: Prisma with full TypeScript support
+- **Auth**: Supabase Auth with Row-Level Security - [ADR 0004](./docs/architecture/decisions/0004-auth-provider.md)
+- **Connection Pooling**: PgBouncer (built into Supabase)
 
 ### Infrastructure
-- **Hosting**: Vercel
+- **Frontend Hosting**: Vercel
+- **Database Hosting**: Supabase
 - **CI/CD**: GitHub Actions
-- **Auth**: Supabase Auth
+- **Monitoring**: Supabase Dashboard + Pino logging
 
 ## Project Structure
 
