@@ -421,6 +421,12 @@ export const orderRouter = router({
 
 /**
  * Helper function to get end of trading day
+ * TODO: Replace with proper market hours service that accounts for:
+ * - Different exchanges (NYSE, NASDAQ, etc.)
+ * - Timezones (Eastern, Pacific, etc.)
+ * - Holidays and early closes
+ * - Pre-market and after-hours trading
+ * Current implementation assumes 4 PM Eastern close (simplified)
  */
 function getEndOfDay(): Date {
   const end = new Date();

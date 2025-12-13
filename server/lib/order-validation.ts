@@ -7,6 +7,16 @@ import { logger } from './logger';
 import { canTradeInstrument } from './trading-hours';
 import { getCurrentPrice, getMidPrice } from './pricing';
 
+/**
+ * Commission per trade for paper trading simulation
+ * In production, this should be:
+ * - Configurable per account type
+ * - Based on broker commission schedules
+ * - Include SEC fees, exchange fees, etc.
+ * Set to $0 for paper trading to simplify calculations
+ */
+const COMMISSION_PER_TRADE = 0;
+
 export interface OrderValidationParams {
   symbol: string;
   side: 'BUY' | 'SELL';
@@ -143,8 +153,8 @@ export async function calculateOrderValue(params: {
     return null;
   }
 
-  // Calculate commission (simplified - $0 for now, but structure is here)
-  const commission = 0;
+  // Calculate commission
+  const commission = COMMISSION_PER_TRADE;
 
   // Calculate total cost
   const estimatedCost = estimatedPrice * quantity + commission;

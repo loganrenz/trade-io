@@ -51,7 +51,7 @@ describe('Order API', () => {
         symbol: 'AAPL',
         timestamp: new Date(),
         bid: 150.25,
-        ask: 150.50,
+        ask: 150.5,
         last: 150.35,
         volume: BigInt(10000000),
       },
@@ -516,9 +516,11 @@ describe('Order API', () => {
       });
 
       expect(result.orders.length).toBe(2);
-      expect(result.orders.every((o) => ['FILLED', 'CANCELLED', 'REJECTED', 'EXPIRED'].includes(o.status))).toBe(
-        true
-      );
+      expect(
+        result.orders.every((o) =>
+          ['FILLED', 'CANCELLED', 'REJECTED', 'EXPIRED'].includes(o.status)
+        )
+      ).toBe(true);
     });
 
     it('should include executions in history', async () => {

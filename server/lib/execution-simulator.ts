@@ -7,6 +7,21 @@ import { logger } from './logger';
 import { getCurrentPrice, getSpread } from './pricing';
 
 /**
+ * Simulated slippage percentage for market orders
+ * In production, this should be configurable based on:
+ * - Market volatility
+ * - Order size vs average volume
+ * - Current bid-ask spread
+ */
+const MARKET_SLIPPAGE_PERCENT = 0.001; // 0.1% slippage
+
+/**
+ * Commission per execution
+ * Set to $0 for paper trading
+ */
+const COMMISSION_PER_EXECUTION = 0;
+
+/**
  * Simulate execution for an order
  * This is a simplified execution simulator for market orders
  */
@@ -85,7 +100,7 @@ export async function simulateExecution(orderId: string): Promise<void> {
         side: order.side,
         quantity: quantityToFill,
         price: executionPrice,
-        commission: 0, // No commission for paper trading
+        commission: COMMISSION_PER_EXECUTION,
         executedAt: new Date(),
       },
     });
@@ -183,12 +198,11 @@ async function getMarketExecutionPrice(symbol: string, side: string): Promise<nu
 
   // For BUY orders, execute at ask price (or slightly above)
   // For SELL orders, execute at bid price (or slightly below)
-  const slippagePercent = 0.001; // 0.1% slippage
 
   if (side === 'BUY') {
-    return spread.ask * (1 + slippagePercent);
+    return spread.ask * (1 + MARKET_SLIPPAGE_PERCENT);
   } else {
-    return spread.bid * (1 - slippagePercent);
+    return spread.bid * (1 - MARKET_SLIPPAGE_PERCENT);
   }
 }
 
