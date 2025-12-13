@@ -51,10 +51,10 @@
     /* Base URL for Path Mapping */
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "@/*": ["./src/*"]
+      "~/*": ["./*"],
+      "@/*": ["./*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "tests/**/*", "server/**/*", "*.ts", "*.vue"],
   "exclude": ["node_modules", "dist", "build", ".nuxt", ".next", "coverage"]
 }
