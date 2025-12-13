@@ -31,7 +31,11 @@ export class AppError extends Error {
  * Used when user input validation fails
  */
 export class ValidationError extends AppError {
-  constructor(message: string, public readonly field?: string, context?: Record<string, unknown>) {
+  constructor(
+    message: string,
+    public readonly field?: string,
+    context?: Record<string, unknown>
+  ) {
     super(message, 'VALIDATION_ERROR', 400, true, { ...context, field });
   }
 }
@@ -97,7 +101,10 @@ export class RateLimitError extends AppError {
  * Used for unexpected server errors
  */
 export class InternalServerError extends AppError {
-  constructor(message: string = 'An internal server error occurred', context?: Record<string, unknown>) {
+  constructor(
+    message: string = 'An internal server error occurred',
+    context?: Record<string, unknown>
+  ) {
     super(message, 'INTERNAL_SERVER_ERROR', 500, false, context);
   }
 }
@@ -108,12 +115,8 @@ export class InternalServerError extends AppError {
  */
 export class ServiceUnavailableError extends AppError {
   constructor(service: string, message?: string) {
-    super(
-      message || `${service} is temporarily unavailable`,
-      'SERVICE_UNAVAILABLE',
-      503,
-      true,
-      { service }
-    );
+    super(message || `${service} is temporarily unavailable`, 'SERVICE_UNAVAILABLE', 503, true, {
+      service,
+    });
   }
 }

@@ -38,7 +38,10 @@ export class InvalidOrderError extends AppError {
  * Used when trading symbol is not valid or tradeable
  */
 export class InvalidSymbolError extends AppError {
-  constructor(public readonly symbol: string, reason?: string) {
+  constructor(
+    public readonly symbol: string,
+    reason?: string
+  ) {
     super(
       reason ? `Invalid symbol ${symbol}: ${reason}` : `Invalid symbol: ${symbol}`,
       'INVALID_SYMBOL',
@@ -104,12 +107,9 @@ export class IdempotencyError extends AppError {
     public readonly idempotencyKey: string,
     public readonly existingResourceId: string
   ) {
-    super(
-      'Request already processed',
-      'IDEMPOTENCY_KEY_REUSED',
-      409,
-      true,
-      { idempotencyKey, existingResourceId }
-    );
+    super('Request already processed', 'IDEMPOTENCY_KEY_REUSED', 409, true, {
+      idempotencyKey,
+      existingResourceId,
+    });
   }
 }

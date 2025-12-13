@@ -2,12 +2,12 @@ import { beforeAll, afterAll, afterEach } from 'vitest';
 
 beforeAll(async () => {
   // Global setup before all tests
-  console.log('Test suite starting...');
+  console.warn('Test suite starting...');
 });
 
 afterAll(async () => {
   // Global teardown after all tests
-  console.log('Test suite complete.');
+  console.warn('Test suite complete.');
 });
 
 afterEach(async () => {
