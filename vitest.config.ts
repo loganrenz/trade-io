@@ -8,6 +8,12 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./tests/setup.ts'],
+    env: {
+      DATABASE_URL:
+        process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/tradeio_dev',
+      DIRECT_URL:
+        process.env.DIRECT_URL || 'postgresql://postgres:postgres@localhost:5432/tradeio_dev',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

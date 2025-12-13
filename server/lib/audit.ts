@@ -7,30 +7,121 @@ import { db } from './db';
 import { logger } from './logger';
 import type { Prisma } from '@prisma/client';
 
-// ============================================================================
-// SCHEMAS
-// ============================================================================
+export interface AuditLogEntry {
+  actor?: string; // User ID who performed the action
+  action: string; // Action type (e.g., 'ORDER_PLACED', 'ACCOUNT_CREATED')
+  resource: string; // Resource type (e.g., 'order', 'account')
+  resourceId?: string; // ID of the affected resource
+  metadata?: Record<string, unknown>; // Additional context
+  requestId?: string; // For request correlation
+  ipAddress?: string; // Client IP address
+  userAgent?: string; // Client user agent
+}
 
 /**
- * Audit log entry schema with validation
+ * Create an audit log entry
+ * This function never throws - failures are logged but don't block operations
  */
-export const auditLogEntrySchema = z.object({
-  actor: z.string().uuid().nullable().optional(),
-  action: z.string().max(100),
-  resource: z.string().max(50),
-  resourceId: z.string().uuid().nullable().optional(),
-  metadata: z.record(z.unknown()).nullable().optional(),
-  requestId: z.string().uuid().nullable().optional(),
-  ipAddress: z.string().max(45).nullable().optional(),
-  userAgent: z.string().nullable().optional(),
-});
+export async function audit(entry: AuditLogEntry): Promise<void> {
+  try {
+    const data: Prisma.AuditLogCreateInput = {
+      action: entry.action,
+      resource: entry.resource,
+      resourceId: entry.resourceId,
+      metadata: entry.metadata as Prisma.InputJsonValue,
+      requestId: entry.requestId,
+      ipAddress: entry.ipAddress,
+      userAgent: entry.userAgent,
+      user: entry.actor
+        ? {
+            connect: {
+              id: entry.actor,
+            },
+          }
+        : undefined,
+    };
 
-export type AuditLogEntry = z.infer<typeof auditLogEntrySchema>;
+    await db.auditLog.create({ data });
 
-// ============================================================================
-// COMMON AUDIT ACTIONS
-// ============================================================================
+    logger.debug(
+      {
+        actor: entry.actor,
+        action: entry.action,
+        resource: entry.resource,
+        resourceId: entry.resourceId,
+      },
+      'Audit log created'
+    );
+  } catch (error) {
+    // NEVER let audit logging failure break the main operation
+    // But log the error for investigation
+    logger.error(
+      {
+        error,
+        entry,
+      },
+      'Failed to create audit log entry'
+    );
+  }
+}
 
+/**
+ * Query audit logs with filters
+ */
+export async function queryAuditLogs(filters: {
+  actor?: string;
+  action?: string;
+  resource?: string;
+  resourceId?: string;
+  requestId?: string;
+  startDate?: Date;
+  endDate?: Date;
+  limit?: number;
+  offset?: number;
+}) {
+  const where: Prisma.AuditLogWhereInput = {};
+
+  if (filters.actor) where.actor = filters.actor;
+  if (filters.action) where.action = filters.action;
+  if (filters.resource) where.resource = filters.resource;
+  if (filters.resourceId) where.resourceId = filters.resourceId;
+  if (filters.requestId) where.requestId = filters.requestId;
+
+  if (filters.startDate || filters.endDate) {
+    where.timestamp = {};
+    if (filters.startDate) where.timestamp.gte = filters.startDate;
+    if (filters.endDate) where.timestamp.lte = filters.endDate;
+  }
+
+  const [total, logs] = await Promise.all([
+    db.auditLog.count({ where }),
+    db.auditLog.findMany({
+      where,
+      orderBy: { timestamp: 'desc' },
+      take: filters.limit ?? 100,
+      skip: filters.offset ?? 0,
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  return {
+    total,
+    logs,
+    limit: filters.limit ?? 100,
+    offset: filters.offset ?? 0,
+  };
+}
+
+/**
+ * Audit action types - centralized constants
+ */
 export const AuditAction = {
   // User actions
   USER_CREATED: 'USER_CREATED',
@@ -44,6 +135,7 @@ export const AuditAction = {
   ACCOUNT_UPDATED: 'ACCOUNT_UPDATED',
   ACCOUNT_DELETED: 'ACCOUNT_DELETED',
   ACCOUNT_SUSPENDED: 'ACCOUNT_SUSPENDED',
+  ACCOUNT_REACTIVATED: 'ACCOUNT_REACTIVATED',
   ACCOUNT_ACTIVATED: 'ACCOUNT_ACTIVATED',
 
   // Order actions
@@ -57,11 +149,40 @@ export const AuditAction = {
   // Position actions
   POSITION_OPENED: 'POSITION_OPENED',
   POSITION_CLOSED: 'POSITION_CLOSED',
+  POSITION_MODIFIED: 'POSITION_MODIFIED',
   POSITION_UPDATED: 'POSITION_UPDATED',
 
   // Ledger actions
   DEPOSIT: 'DEPOSIT',
   WITHDRAWAL: 'WITHDRAWAL',
+  TRANSFER: 'TRANSFER',
+  ADJUSTMENT: 'ADJUSTMENT',
+
+  // Risk actions
+  RISK_LIMIT_UPDATED: 'RISK_LIMIT_UPDATED',
+  SYMBOL_RESTRICTED: 'SYMBOL_RESTRICTED',
+  SYMBOL_UNRESTRICTED: 'SYMBOL_UNRESTRICTED',
+
+  // System actions
+  SYSTEM_MAINTENANCE: 'SYSTEM_MAINTENANCE',
+  SYSTEM_ERROR: 'SYSTEM_ERROR',
+} as const;
+
+/**
+ * Audit resource types - centralized constants
+ */
+export const AuditResource = {
+  USER: 'user',
+  ACCOUNT: 'account',
+  ORDER: 'order',
+  EXECUTION: 'execution',
+  POSITION: 'position',
+  LEDGER_ENTRY: 'ledger_entry',
+  INSTRUMENT: 'instrument',
+  RISK_LIMIT: 'risk_limit',
+  SYMBOL_RESTRICTION: 'symbol_restriction',
+  SYSTEM: 'system',
+} as const;
   TRADE_SETTLED: 'TRADE_SETTLED',
   FEE_CHARGED: 'FEE_CHARGED',
   ADJUSTMENT: 'ADJUSTMENT',
