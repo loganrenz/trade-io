@@ -21,7 +21,8 @@ export const orderRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const idempotencyKey = input.idempotencyKey || `order-${ctx.userId}-${randomUUID()}`;
+        // Use provided idempotency key or generate a secure random one
+        const idempotencyKey = input.idempotencyKey || `order-${randomUUID()}`;
 
         const order = await orderService.placeOrder(
           {

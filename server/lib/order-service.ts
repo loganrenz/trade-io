@@ -198,9 +198,12 @@ export async function modifyOrder(
 
     return order;
   } catch (error) {
+    // Re-throw ConcurrencyError for client handling
     if (error instanceof ConcurrencyError) {
       throw error;
     }
+    // Log and re-throw unexpected errors
+    logger.error({ orderId, error }, 'Unexpected error modifying order');
     throw error;
   }
 }
@@ -269,9 +272,12 @@ export async function cancelOrder(orderId: string, userId: string): Promise<unkn
 
     return order;
   } catch (error) {
+    // Re-throw ConcurrencyError for client handling
     if (error instanceof ConcurrencyError) {
       throw error;
     }
+    // Log and re-throw unexpected errors
+    logger.error({ orderId, error }, 'Unexpected error cancelling order');
     throw error;
   }
 }
