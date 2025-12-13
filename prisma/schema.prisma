@@ -86,6 +86,7 @@ model Order {
   
   account         Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
   executions      Execution[]
+  events          OrderEvent[]
   
   @@map("orders")
   @@index([accountId, status])
@@ -111,6 +112,22 @@ model Execution {
   @@index([orderId])
   @@index([symbol])
   @@index([executedAt])
+}
+
+model OrderEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  orderId     String   @db.Uuid
+  eventType   String   @db.VarChar(20) // CREATED, ACCEPTED, PARTIAL_FILL, FILLED, CANCELLED, REJECTED, EXPIRED
+  oldStatus   String?  @db.VarChar(20)
+  newStatus   String   @db.VarChar(20)
+  metadata    Json?    // Additional event data
+  createdAt   DateTime @default(now())
+  
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@map("order_events")
+  @@index([orderId, createdAt])
+  @@index([eventType])
 }
 
 // ============================================================================
@@ -153,23 +170,129 @@ model LedgerEntry {
   @@index([referenceId])
 }
 
+model LedgerAccount {
+  id             String   @id @default(uuid()) @db.Uuid
+  accountId      String   @db.Uuid
+  accountType    String   @db.VarChar(20) // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  accountName    String   @db.VarChar(100)
+  balance        Decimal  @default(0) @db.Decimal(18, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@map("ledger_accounts")
+  @@index([accountId])
+  @@index([accountType])
+}
+
 // ============================================================================
 // MARKET DATA (Basic - will be expanded in Phase 3)
 // ============================================================================
 
 model Instrument {
-  id          String   @id @default(uuid()) @db.Uuid
-  symbol      String   @unique @db.VarChar(10)
+  id          String          @id @default(uuid()) @db.Uuid
+  symbol      String          @unique @db.VarChar(10)
   name        String
-  type        String   @default("STOCK") @db.VarChar(20) // STOCK, ETF, OPTION, etc.
-  exchange    String   @db.VarChar(10)
-  isActive    Boolean  @default(true)
-  isTradeable Boolean  @default(true)
-  updatedAt   DateTime @updatedAt
+  type        String          @default("STOCK") @db.VarChar(20) // STOCK, ETF, OPTION, etc.
+  exchange    String          @db.VarChar(10)
+  isActive    Boolean         @default(true)
+  isTradeable Boolean         @default(true)
+  updatedAt   DateTime        @updatedAt
+  
+  quotes      Quote[]
+  bars        Bar[]
   
   @@map("instruments")
   @@index([symbol])
   @@index([isActive, isTradeable])
+}
+
+model Quote {
+  id           String     @id @default(uuid()) @db.Uuid
+  instrumentId String     @db.Uuid
+  timestamp    DateTime
+  bid          Decimal?   @db.Decimal(20, 8)
+  ask          Decimal?   @db.Decimal(20, 8)
+  last         Decimal?   @db.Decimal(20, 8)
+  volume       BigInt?
+  createdAt    DateTime   @default(now())
+  
+  instrument   Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  
+  @@map("quotes")
+  @@index([instrumentId, timestamp(sort: Desc)])
+  @@index([timestamp(sort: Desc)])
+}
+
+model Bar {
+  id           String     @id @default(uuid()) @db.Uuid
+  instrumentId String     @db.Uuid
+  timeframe    String     @db.VarChar(10) // '1m', '5m', '1h', '1d'
+  timestamp    DateTime
+  open         Decimal    @db.Decimal(20, 8)
+  high         Decimal    @db.Decimal(20, 8)
+  low          Decimal    @db.Decimal(20, 8)
+  close        Decimal    @db.Decimal(20, 8)
+  volume       BigInt
+  createdAt    DateTime   @default(now())
+  
+  instrument   Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  
+  @@unique([instrumentId, timeframe, timestamp])
+  @@map("bars")
+  @@index([instrumentId, timeframe, timestamp(sort: Desc)])
+}
+
+model TradingSession {
+  id          String   @id @default(uuid()) @db.Uuid
+  exchange    String   @db.VarChar(20)
+  sessionType String   @db.VarChar(20) // 'REGULAR', 'PRE_MARKET', 'AFTER_HOURS'
+  openTime    DateTime @db.Time(6) // Time of day (use date part ignored)
+  closeTime   DateTime @db.Time(6)
+  daysOfWeek  Int[] // [1,2,3,4,5] for Mon-Fri
+  timezone    String   @default("America/New_York") @db.VarChar(50)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("trading_sessions")
+  @@index([exchange])
+}
+
+// ============================================================================
+// RISK & COMPLIANCE
+// ============================================================================
+
+model RiskLimit {
+  id                 String   @id @default(uuid()) @db.Uuid
+  accountId          String   @db.Uuid
+  limitType          String   @db.VarChar(50) // MAX_POSITION_SIZE, MAX_ORDER_VALUE, MAX_DAILY_LOSS, etc.
+  symbol             String?  @db.VarChar(10) // Optional: limit per symbol
+  limitValue         Decimal  @db.Decimal(18, 2)
+  currentValue       Decimal  @default(0) @db.Decimal(18, 2)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  @@map("risk_limits")
+  @@index([accountId])
+  @@index([limitType])
+  @@index([symbol])
+}
+
+model SymbolRestriction {
+  id          String   @id @default(uuid()) @db.Uuid
+  symbol      String   @db.VarChar(10)
+  accountId   String?  @db.Uuid // Optional: restriction per account, null = global
+  restriction String   @db.VarChar(20) // BLOCKED, SELL_ONLY, BUY_ONLY
+  reason      String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expiresAt   DateTime?
+  
+  @@map("symbol_restrictions")
+  @@index([symbol])
+  @@index([accountId])
+  @@index([isActive])
 }
 
 // ============================================================================
