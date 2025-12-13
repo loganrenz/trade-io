@@ -10,6 +10,7 @@ import { accountRouter } from './account';
 import { instrumentRouter } from './instrument';
 import { quoteRouter } from './quote';
 import { barRouter } from './bar';
+import { orderRouter } from './order';
 
 export const appRouter = router({
   health: healthRouter,
@@ -19,8 +20,8 @@ export const appRouter = router({
   instrument: instrumentRouter,
   quote: quoteRouter,
   bar: barRouter,
+  order: orderRouter,
   // Additional routers will be added here as features are implemented
-  // orders: ordersRouter,
   // positions: positionsRouter,
 });
 
