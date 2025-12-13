@@ -4,7 +4,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as orderService from '../../server/lib/order-service';
 import { db } from '../../server/lib/db';
-import { InvalidOrderError, ConcurrencyError } from '../../server/errors';
+import { ConcurrencyError } from '../../server/errors';
 
 // Mock dependencies
 vi.mock('../../server/lib/db', () => ({
@@ -149,11 +149,7 @@ describe('Order Service', () => {
       vi.mocked(db.order.updateMany).mockResolvedValue({ count: 1 } as any);
       vi.mocked(db.orderEvent.create).mockResolvedValue({} as any);
 
-      const order = await orderService.modifyOrder(
-        'order-123',
-        { quantity: 20 },
-        'user-123'
-      );
+      const order = await orderService.modifyOrder('order-123', { quantity: 20 }, 'user-123');
 
       expect(order.quantity).toBe(20);
       expect(db.order.updateMany).toHaveBeenCalledWith({

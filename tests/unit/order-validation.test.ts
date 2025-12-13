@@ -1,7 +1,7 @@
 /**
  * Order Validation Service Tests
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import Decimal from 'decimal.js';
 import {
   validateQuantity,
@@ -90,9 +90,7 @@ describe('Order Validation Service', () => {
     });
 
     it('should require limit price for LIMIT orders', () => {
-      expect(() => validatePriceParameters('LIMIT', undefined, undefined)).toThrow(
-        ValidationError
-      );
+      expect(() => validatePriceParameters('LIMIT', undefined, undefined)).toThrow(ValidationError);
       expect(() => validatePriceParameters('LIMIT', 100, undefined)).not.toThrow();
     });
 
