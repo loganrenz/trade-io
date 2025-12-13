@@ -1,10 +1,13 @@
 # ADR 0003: Database ORM Selection
 
 ## Status
+
 **Accepted** - 2025-12-12
 
 ## Context
+
 We need to choose an ORM (Object-Relational Mapping) tool for database access. Requirements include:
+
 - **Type safety**: End-to-end types from database schema to application code
 - **Migration management**: Robust schema migrations with rollback support
 - **Query builder**: Intuitive API for complex queries
@@ -17,11 +20,13 @@ We need to choose an ORM (Object-Relational Mapping) tool for database access. R
 The platform will have complex relationships (users, accounts, orders, positions, audit logs) requiring robust data modeling.
 
 ## Decision
+
 **We will use Prisma as our ORM.**
 
 ## Rationale
 
 ### Why Prisma
+
 1. **Schema-first design**: Single source of truth in `schema.prisma` file
 2. **Type-safe client**: Generated TypeScript types match database schema exactly
 3. **Excellent DX**: Autocomplete for queries, clear error messages
@@ -34,6 +39,7 @@ The platform will have complex relationships (users, accounts, orders, positions
 10. **Active development**: Well-funded, rapidly improving
 
 ### Why Prisma over Drizzle
+
 1. **Maturity**: Prisma is production-proven with years of development
 2. **Tooling**: Prisma Studio, better IDE support
 3. **Migrations**: More robust migration system with better conflict resolution
@@ -43,13 +49,16 @@ The platform will have complex relationships (users, accounts, orders, positions
 ### Alternatives Considered
 
 #### Drizzle ORM
+
 **Pros:**
+
 - Lighter weight (smaller bundle size)
 - SQL-like syntax (closer to raw SQL)
 - Better performance for some query patterns
 - Flexible schema definition (can use TypeScript)
 
 **Cons:**
+
 - Newer, less battle-tested
 - Smaller community and ecosystem
 - Migration tooling less mature
@@ -59,12 +68,15 @@ The platform will have complex relationships (users, accounts, orders, positions
 **Decision:** Prisma's maturity and developer experience outweigh Drizzle's performance advantages.
 
 #### TypeORM
+
 **Pros:**
+
 - Mature and stable
 - Decorator-based models (familiar to Java/C# developers)
 - Active Record and Data Mapper patterns
 
 **Cons:**
+
 - Less type-safe than Prisma
 - Schema definition in TypeScript (not separate schema file)
 - Migration generation less reliable
@@ -74,13 +86,16 @@ The platform will have complex relationships (users, accounts, orders, positions
 **Decision:** Prisma's type safety and DX are significantly better.
 
 #### Kysely
+
 **Pros:**
+
 - Type-safe SQL builder
 - Very close to raw SQL
 - Excellent TypeScript inference
 - Lightweight
 
 **Cons:**
+
 - Lower-level (more manual query building)
 - No schema management or migrations
 - No relation helpers
@@ -89,12 +104,15 @@ The platform will have complex relationships (users, accounts, orders, positions
 **Decision:** Too low-level; we want higher abstraction with relations.
 
 #### Sequelize
+
 **Pros:**
+
 - Very mature and stable
 - Large community
 - Extensive features
 
 **Cons:**
+
 - Poor TypeScript support
 - Outdated patterns
 - Verbose API
@@ -105,6 +123,7 @@ The platform will have complex relationships (users, accounts, orders, positions
 ## Consequences
 
 ### Positive
+
 - **End-to-end type safety**: Schema → Prisma Client → tRPC → Frontend
 - **Rapid development**: Less boilerplate than raw SQL or query builders
 - **Safety**: Type errors for invalid queries, migrations prevent data loss
@@ -114,12 +133,14 @@ The platform will have complex relationships (users, accounts, orders, positions
 - **Audit trail ready**: Middleware for tracking changes
 
 ### Negative
+
 - **Abstraction penalty**: Some complex queries harder than raw SQL
 - **Bundle size**: Prisma client adds ~2MB to deployment
 - **Lock-in**: Migrating away from Prisma requires rewriting data access layer
 - **Some performance overhead**: Not as fast as hand-optimized SQL
 
 ### Neutral
+
 - **Schema management**: Need to maintain `schema.prisma` file
 - **Code generation**: Must run `prisma generate` after schema changes
 - **Migration workflow**: Need discipline to create migrations properly
@@ -127,12 +148,14 @@ The platform will have complex relationships (users, accounts, orders, positions
 ## Implementation Notes
 
 ### Installation
+
 ```bash
 npm install prisma @prisma/client
 npm install -D prisma
 ```
 
 ### Project Setup
+
 ```bash
 # Initialize Prisma
 npx prisma init
@@ -143,6 +166,7 @@ npx prisma init
 ```
 
 ### Schema Structure
+
 ```prisma
 // prisma/schema.prisma
 generator client {
@@ -164,10 +188,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
-  
+
   accounts      Account[]
   auditLogs     AuditLog[]
-  
+
   @@map("users")
 }
 
@@ -178,14 +202,14 @@ model Account {
   status    String   @default("ACTIVE") // ACTIVE, SUSPENDED, CLOSED
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   ownerId   String   @db.Uuid
   owner     User     @relation(fields: [ownerId], references: [id])
-  
+
   orders    Order[]
   positions Position[]
   ledgerEntries LedgerEntry[]
-  
+
   @@map("accounts")
   @@index([ownerId])
   @@index([status])
@@ -207,10 +231,10 @@ model Order {
   version         Int      @default(1)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  
+
   account         Account  @relation(fields: [accountId], references: [id])
   executions      Execution[]
-  
+
   @@map("orders")
   @@index([accountId, status])
   @@index([symbol])
@@ -227,9 +251,9 @@ model AuditLog {
   requestId  String?
   ipAddress  String?
   timestamp  DateTime @default(now())
-  
+
   user       User?    @relation(fields: [actor], references: [id])
-  
+
   @@map("audit_logs")
   @@index([actor])
   @@index([action])
@@ -239,6 +263,7 @@ model AuditLog {
 ```
 
 ### Client Usage
+
 ```typescript
 // lib/db.ts
 import { PrismaClient } from '@prisma/client';
@@ -248,9 +273,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 export const db =
   globalForPrisma.prisma ||
   new PrismaClient({
-    log: process.env.NODE_ENV === 'development' 
-      ? ['query', 'error', 'warn'] 
-      : ['error'],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db;
@@ -265,7 +288,7 @@ export class OrderService {
       where: { id: params.accountId, ownerId: userId },
     });
     if (!account) throw new ForbiddenError();
-    
+
     // Create order with transaction
     return db.$transaction(async (tx) => {
       const order = await tx.order.create({
@@ -279,7 +302,7 @@ export class OrderService {
           idempotencyKey: params.idempotencyKey,
         },
       });
-      
+
       await tx.auditLog.create({
         data: {
           actor: userId,
@@ -289,18 +312,18 @@ export class OrderService {
           metadata: params,
         },
       });
-      
+
       return order;
     });
   }
-  
+
   async listOrders(accountId: string, userId: string) {
     // Check authorization
     const account = await db.account.findFirst({
       where: { id: accountId, ownerId: userId },
     });
     if (!account) throw new ForbiddenError();
-    
+
     return db.order.findMany({
       where: { accountId },
       orderBy: { createdAt: 'desc' },
@@ -313,6 +336,7 @@ export class OrderService {
 ```
 
 ### Migration Workflow
+
 ```bash
 # Create migration after schema change
 npx prisma migrate dev --name add_orders_table
@@ -328,6 +352,7 @@ npx prisma studio
 ```
 
 ### Middleware Example
+
 ```typescript
 // Soft delete middleware
 db.$use(async (params, next) => {
@@ -347,6 +372,7 @@ db.$use(async (params, next) => {
 ```
 
 ### Performance Patterns
+
 ```typescript
 // Use select to fetch only needed fields
 const users = await db.user.findMany({
@@ -400,17 +426,21 @@ export const ordersRouter = router({
 Types flow automatically: Prisma → tRPC router → Frontend client.
 
 ## Related Decisions
+
 - [ADR 0002: Backend API Pattern](./0002-backend-api-pattern.md) - tRPC for type-safe API
 - [ADR 0005: Database Hosting](./0005-database-hosting.md) - PostgreSQL hosting choice
 
 ## References
+
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [Prisma Best Practices](https://www.prisma.io/docs/guides/performance-and-optimization)
 - [Prisma with tRPC](https://trpc.io/docs/server/prisma)
 - [PostgreSQL Data Types](https://www.postgresql.org/docs/current/datatype.html)
 
 ## Review Date
+
 This decision should be reviewed in **12 months (December 2026)** or when:
+
 - Prisma performance becomes a bottleneck
 - Need for lower-level database access increases significantly
 - Alternative ORMs (e.g., Drizzle) mature substantially

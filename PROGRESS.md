@@ -12,6 +12,7 @@
 **PROMPT TO USE**: "Please continue where we left off on the Trade.io project."
 
 When you use this prompt, immediately:
+
 1. Read this file (`PROGRESS.md`) to understand current state
 2. Read the next issue file indicated below
 3. Follow the workflow in `AGENTS.md`
@@ -22,6 +23,7 @@ When you use this prompt, immediately:
 ## Current Status
 
 ### Overall Progress
+
 - **Total Issues**: 70
 - **Completed**: 17
 - **In Progress**: None
@@ -31,6 +33,7 @@ When you use this prompt, immediately:
 ### Phase Progress
 
 #### Phase 0: Repository Baseline & Tooling (8/8 complete - 100% ✅)
+
 - [x] 0001 - Repository Baseline Setup ✅
 - [x] 0002 - Technology Stack Decisions ✅
 - [x] 0003 - Development Environment Setup ✅
@@ -65,6 +68,7 @@ When you use this prompt, immediately:
 - [ ] 0028 - Health Check Endpoint
 
 #### Phase 3: Market Data & Pricing (0/8 complete - 0%)
+
 - [ ] 0029 - Instrument API
 - [ ] 0030 - Market Data Provider Integration
 - [ ] 0031 - Quote Ingestion Service
@@ -75,6 +79,7 @@ When you use this prompt, immediately:
 - [ ] 0036 - Trading Hours Validation
 
 #### Phase 4: Order Lifecycle & Execution (0/10 complete - 0%)
+
 - [ ] 0037 - Order Placement API
 - [ ] 0038 - Order Validation Service
 - [ ] 0039 - Order Modification API
@@ -87,6 +92,7 @@ When you use this prompt, immediately:
 - [ ] 0046 - Order Event System
 
 #### Phase 5: Portfolio & Ledger & PnL (0/8 complete - 0%)
+
 - [ ] 0047 - Ledger Service Core
 - [ ] 0048 - Execution Recording
 - [ ] 0049 - Cash Balance Calculation
@@ -97,6 +103,7 @@ When you use this prompt, immediately:
 - [ ] 0054 - Transaction History API
 
 #### Phase 6: Admin & Observability (0/8 complete - 0%)
+
 - [ ] 0055 - Admin Authentication
 - [ ] 0056 - User Management Admin
 - [ ] 0057 - Risk Limit Management
@@ -107,6 +114,7 @@ When you use this prompt, immediately:
 - [ ] 0062 - Database Backup Strategy
 
 #### Phase 7: Hardening & Security (0/8 complete - 0%)
+
 - [ ] 0063 - Security Audit
 - [ ] 0064 - Dependency Vulnerability Scanning
 - [ ] 0065 - Performance Testing
@@ -270,14 +278,17 @@ Issue #0018 - Authorization Middleware (protect routes, check permissions)
 ---
 
 ### 2025-12-12 19:51 UTC - Agent 4 (Database Migration)
+
 **Action**: Completed Issue #0009 - Initial Database Migration
 
 **Issues Completed**:
+
 - #0009 - Initial Database Migration ✅
 
 **Phase 1 Status**: █░░░░░░░ 12.5% (1/8 issues)
 
 **Files Created/Modified**:
+
 - `.env` - Environment configuration for local development
 - `prisma/migrations/20251212194536_initial_schema/migration.sql` - Initial database migration
 - `prisma/migrations/migration_lock.toml` - Migration lock file
@@ -286,6 +297,7 @@ Issue #0018 - Authorization Middleware (protect routes, check permissions)
 - `PROGRESS.md` - Updated with Issue #0009 completion
 
 **Migration Details**:
+
 - **Tables Created**: 8 (users, accounts, orders, executions, positions, ledger_entries, instruments, audit_logs)
 - **Indexes Created**: 21 strategic indexes for query performance
 - **Foreign Keys**: 6 foreign key constraints with CASCADE deletes
@@ -295,6 +307,7 @@ Issue #0018 - Authorization Middleware (protect routes, check permissions)
 - **Optimistic Locking**: version fields on orders
 
 **Tests Added**:
+
 - ✅ 22 integration tests covering all tables
 - ✅ Unique constraint validation
 - ✅ Foreign key relationship validation
@@ -305,6 +318,7 @@ Issue #0018 - Authorization Middleware (protect routes, check permissions)
 - ✅ 100% test pass rate
 
 **Validation**:
+
 - ✅ `docker compose up -d` - PostgreSQL and Redis running
 - ✅ `npx prisma migrate dev` - Migration created and applied
 - ✅ `npm run test:integration` - 22/22 tests passing
@@ -313,9 +327,10 @@ Issue #0018 - Authorization Middleware (protect routes, check permissions)
 - ✅ Database inspection - All tables, indexes, and constraints verified
 
 **Database Validation**:
+
 ```sql
 -- Tables verified:
-users, accounts, orders, executions, positions, 
+users, accounts, orders, executions, positions,
 ledger_entries, instruments, audit_logs
 
 -- Constraints verified:
@@ -326,13 +341,14 @@ ledger_entries, instruments, audit_logs
 ```
 
 **Documentation**:
+
 - Complete migration workflow guide
 - Common commands and best practices
 - Development and deployment procedures
 - Rollback strategies
 - Troubleshooting guide
 
-**Next Steps**: 
+**Next Steps**:
 Issue #0010 - Audit Log Schema (Note: Schema already exists, will implement the audit logging service)
 
 **Branch**: `copilot/continue-last-agent-progress`
@@ -343,14 +359,17 @@ Issue #0010 - Audit Log Schema (Note: Schema already exists, will implement the 
 ---
 
 ### 2025-12-12 19:22 UTC - Agent 3 (Phase 0 Completion!)
+
 **Action**: Completed Issue #0008 - Typed Error Classes and Error Handling
 
 **Issues Completed**:
+
 - #0008 - Logging and Error Handling ✅
 
 **Phase 0 Status**: ██████████ 100% COMPLETE! (8/8 issues)
 
 **Files Created**:
+
 - `server/errors/base.ts` - Base error classes (8 error types)
 - `server/errors/business.ts` - Business logic errors (7 error types)
 - `server/errors/handler.ts` - Error handling utilities
@@ -360,15 +379,18 @@ Issue #0010 - Audit Log Schema (Note: Schema already exists, will implement the 
 
 **Error Classes Implemented**:
 **Base Errors (HTTP-aligned):**
+
 - ValidationError (400), AuthenticationError (401), ForbiddenError (403)
 - NotFoundError (404), ConflictError (409), RateLimitError (429)
 - InternalServerError (500), ServiceUnavailableError (503)
 
 **Business Logic Errors:**
+
 - InsufficientFundsError, InvalidOrderError, InvalidSymbolError
 - MarketClosedError, PositionLimitError, ConcurrencyError, IdempotencyError
 
 **Features**:
+
 - ✅ Proper HTTP status codes for all error types
 - ✅ Consistent error codes for client-side handling
 - ✅ Operational vs programming error classification
@@ -378,16 +400,18 @@ Issue #0010 - Audit Log Schema (Note: Schema already exists, will implement the 
 - ✅ Integration with Pino logger
 
 **Tests Added**:
+
 - ✅ 6 tests for base error classes
 - ✅ 4 tests for business error classes
 - ✅ Total: 12 unit tests, 100% passing
 
 **Validation**:
+
 - ✅ `npm run test:unit` - 12/12 tests passing
 - ✅ Type checking passing
 - ✅ Error hierarchy tested
 
-**Next Steps**: 
+**Next Steps**:
 Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database Migration)
 
 **Branch**: `copilot/continue-previous-work`
@@ -398,9 +422,11 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 ---
 
 ### 2025-12-12 19:17 UTC - Agent 3 (Comprehensive Multi-Issue Implementation)
+
 **Action**: Completed comprehensive Phase 0 implementation - Issues 0002-0007 (6 issues!)
 
 **Issues Completed**:
+
 - #0002 - Technology Stack Decisions ✅
 - #0003 - Development Environment Setup ✅
 - #0004 - Linting and Formatting ✅
@@ -411,6 +437,7 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 
 **Files Created** (60+ files!):
 **Architecture Decision Records:**
+
 - `docs/architecture/decisions/README.md` - ADR index
 - `docs/architecture/decisions/0001-frontend-framework.md` - Nuxt 3 decision
 - `docs/architecture/decisions/0002-backend-api-pattern.md` - tRPC decision
@@ -419,6 +446,7 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 - `docs/architecture/decisions/0005-database-hosting.md` - Supabase hosting decision
 
 **Configuration Files:**
+
 - `nuxt.config.ts` - Complete Nuxt 3 configuration
 - `tailwind.config.ts` - Tailwind CSS configuration
 - `eslint.config.js` - ESLint with Nuxt preset
@@ -429,9 +457,11 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 - `tsconfig.json` - TypeScript strict mode (already existed, updated)
 
 **Database:**
+
 - `prisma/schema.prisma` - Complete data model (Users, Accounts, Orders, Executions, Positions, Ledger, Instruments, AuditLog)
 
 **Server Infrastructure:**
+
 - `server/lib/db.ts` - Prisma client singleton
 - `server/lib/logger.ts` - Pino structured logging
 - `server/trpc/context.ts` - tRPC request context
@@ -441,29 +471,35 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 - `server/api/trpc/[trpc].ts` - Nuxt tRPC handler
 
 **Testing:**
+
 - `tests/setup.ts` - Global test configuration
 - `tests/factories/user.factory.ts` - Test data factory
 - `tests/unit/example.test.ts` - Example unit tests
 - `tests/unit/`, `tests/integration/`, `tests/e2e/` - Directory structure
 
 **CI/CD:**
+
 - `.github/workflows/ci.yml` - Multi-job GitHub Actions pipeline (lint, unit tests, integration tests, E2E tests, build, security scan)
 
 **Frontend:**
+
 - `app.vue` - Root Vue component
 - `pages/index.vue` - Landing page with health check example
 - `assets/css/main.css` - Tailwind base styles
 
 **Dependencies:**
+
 - Installed 1165 packages including Nuxt 3, Prisma, tRPC, Vitest, Playwright, Pino, and all dev dependencies
 - Total package.json: 17 production dependencies, 27 dev dependencies
 
 **Tests Added:**
+
 - ✅ Example unit tests passing (2 tests)
 - ✅ Test infrastructure ready for all test types
 - ✅ Type checking passing (vue-tsc + tsc)
 
 **Validation:**
+
 - ✅ `npm install` - Completes successfully
 - ✅ `npx prisma generate` - Prisma Client generated
 - ✅ `npm run typecheck` - No TypeScript errors
@@ -472,6 +508,7 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 - ⚠️ Database migrations - Not yet created (Phase 1 task)
 
 **Technical Achievements:**
+
 1. **End-to-end type safety**: Prisma → tRPC → Nuxt frontend
 2. **Production-ready tooling**: ESLint, Prettier, Husky (pre-commit hooks ready)
 3. **Comprehensive CI/CD**: 6 separate jobs for quality gates
@@ -480,7 +517,8 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 6. **Security-first**: Audit logging schema, RLS-ready, no secrets in code
 7. **Test pyramid**: Unit (Vitest), Integration (Vitest + DB), E2E (Playwright)
 
-**Next Steps**: 
+**Next Steps**:
+
 1. Add typed error classes to complete issue #0008
 2. Begin Phase 1: Database Migrations (Issue #0009)
 3. Test `npm run dev` with local Docker database
@@ -494,12 +532,15 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 ---
 
 ### 2024-12-12 18:45 UTC - Agent 2 (Implementation)
+
 **Action**: Completed repository baseline setup
 
 **Issues Completed**:
+
 - #0001 - Repository Baseline Setup ✅
 
 **Files Created**:
+
 - `package.json` - Project metadata, Node.js >=20, scripts
 - `tsconfig.json` - TypeScript strict mode, ES2022 target
 - `.gitignore` - Comprehensive ignore patterns
@@ -509,6 +550,7 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 - `LICENSE` - MIT License
 
 **Tests/Validation**:
+
 - ✅ `npm install` - Completes successfully (0 vulnerabilities)
 - ✅ `npx tsc --noEmit` - TypeScript compiles without errors
 - ✅ `git status` - node_modules correctly ignored
@@ -517,14 +559,17 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 
 **Branch**: `copilot/setup-repo-docs-and-issues`
 **Commits**:
+
 - `5179a7f` - feat(repo): initialize repository baseline - Refs #0001
 
 ---
 
 ### 2024-12-12 18:35 UTC - Agent 1 (Planner + Repo Bootstrapper)
+
 **Action**: Created comprehensive documentation scaffolding and 70-issue backlog
 
 **Files Created**:
+
 - `AGENTS.md` - Agent workflow guide (18k+ chars)
 - `README.md` - Project overview
 - `.env.example` - Environment template
@@ -544,7 +589,8 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 **Next Steps**: Begin implementation with issue 0001
 
 **Branch**: `copilot/setup-repo-docs-and-issues`
-**Commits**: 
+**Commits**:
+
 - `fc164b3` - feat: add PROGRESS.md tracking system
 - `12aa42b` - docs: add final documentation files
 - `c82ad23` - feat(docs): create comprehensive documentation and 70-issue backlog
@@ -556,6 +602,7 @@ Begin Phase 1: Data Model & Audit Foundation with Issue #0009 (Initial Database 
 When you complete work, you **MUST** update this file before finishing:
 
 ### 1. Update the Header
+
 ```markdown
 **Last Updated**: [Current UTC timestamp]
 **Last Agent**: [Your agent identifier]
@@ -564,10 +611,13 @@ When you complete work, you **MUST** update this file before finishing:
 ```
 
 ### 2. Update Progress Checkboxes
+
 Change `- [ ]` to `- [x]` for completed issues in the phase sections.
 
 ### 3. Update Overall Progress
+
 Recalculate completion percentages:
+
 ```markdown
 - **Completed**: [number]
 - **Remaining**: [70 - completed]
@@ -575,32 +625,41 @@ Recalculate completion percentages:
 ```
 
 ### 4. Add to Work Log
+
 Add a new entry at the TOP of the Work Log section:
+
 ```markdown
 ### [UTC timestamp] - [Agent identifier]
+
 **Action**: [What you accomplished]
 
 **Issues Completed**:
+
 - #0001 - Repository Baseline Setup
 - #0002 - Technology Stack Decisions
 
 **Files Created/Modified**:
+
 - List key files changed
 
 **Tests Added**:
+
 - Brief summary of tests
 
 **Next Steps**: [What the next agent should do]
 
 **Branch**: [Branch name]
-**Commits**: 
+**Commits**:
+
 - [short hash] - [commit message]
 ```
 
 ### 5. Update "Next Issue to Work On"
+
 Point to the next issue in sequence.
 
 ### 6. Update "Recently Completed Issues"
+
 Move completed issues from "Next" to "Recently Completed" (keep last 5).
 
 ### Example Update
@@ -620,13 +679,16 @@ Move completed issues from "Next" to "Recently Completed" (keep last 5).
 ## Work Log
 
 ### 2025-12-12 20:15 UTC - Agent 2 (Implementation)
+
 **Action**: Completed repository baseline setup and tech stack decisions
 
 **Issues Completed**:
+
 - #0001 - Repository Baseline Setup ✅
 - #0002 - Technology Stack Decisions ✅
 
 **Files Created/Modified**:
+
 - `package.json` - Project metadata, Nuxt 3, Prisma, tRPC
 - `tsconfig.json` - TypeScript strict mode config
 - `.gitignore` - Comprehensive ignore patterns
@@ -636,12 +698,14 @@ Move completed issues from "Next" to "Recently Completed" (keep last 5).
 - `docs/architecture/decisions/` - 5 ADR files
 
 **Tests Added**:
+
 - Validation: npm install, tsc --noEmit both pass
 
 **Next Steps**: Continue with issue 0003 (Development Environment Setup)
 
 **Branch**: `copilot/0001-0002-baseline-and-tech-stack`
 **Commits**:
+
 - `abc1234` - feat(repo): initialize repository baseline
 - `def5678` - docs(arch): document technology stack decisions
 ```

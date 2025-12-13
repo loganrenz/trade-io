@@ -7,17 +7,20 @@ This directory contains the architectural documentation for Trade.io, a producti
 ## Documents
 
 ### Core Architecture
+
 - [System Overview](./system-overview.md) - High-level system architecture and components
 - [Data Model](./data-model.md) - Complete database schema and entity relationships
 - [Service Boundaries](./service-boundaries.md) - Service separation and communication patterns
 - [Event System](./event-system.md) - Audit logging and event-sourcing patterns
 
 ### Technical Decisions
+
 - [Technology Decisions](./technology-decisions.md) - ADRs (Architecture Decision Records) and rationale
 - [Concurrency Strategy](./concurrency-strategy.md) - Handling concurrent operations safely
 - [Idempotency](./idempotency.md) - Ensuring operations can be safely retried
 
 ### Subsystems
+
 - [Order Lifecycle](./order-lifecycle.md) - Order state machine and execution flow
 - [Portfolio Engine](./portfolio-engine.md) - Position tracking and PnL calculations
 - [Ledger System](./ledger-system.md) - Double-entry bookkeeping implementation
@@ -27,6 +30,7 @@ This directory contains the architectural documentation for Trade.io, a producti
 ## Architecture Principles
 
 ### 1. Security First
+
 - Defense in depth
 - Principle of least privilege
 - Audit everything
@@ -34,6 +38,7 @@ This directory contains the architectural documentation for Trade.io, a producti
 - Fail securely
 
 ### 2. Data Integrity
+
 - ACID transactions where needed
 - Optimistic concurrency control
 - Idempotent operations
@@ -41,6 +46,7 @@ This directory contains the architectural documentation for Trade.io, a producti
 - Double-entry ledger for money
 
 ### 3. Testability
+
 - Clear service boundaries
 - Dependency injection
 - Pure functions where possible
@@ -48,6 +54,7 @@ This directory contains the architectural documentation for Trade.io, a producti
 - Integration test support
 
 ### 4. Maintainability
+
 - Clear separation of concerns
 - Consistent patterns
 - Comprehensive documentation
@@ -55,6 +62,7 @@ This directory contains the architectural documentation for Trade.io, a producti
 - Meaningful error messages
 
 ### 5. Performance
+
 - Appropriate indexing
 - Caching strategy
 - Efficient queries
@@ -120,6 +128,7 @@ This directory contains the architectural documentation for Trade.io, a producti
 ## Data Flow Examples
 
 ### Place Order Flow
+
 ```
 1. Client → API Gateway: POST /api/orders
 2. API Gateway → Auth: Validate token
@@ -138,6 +147,7 @@ This directory contains the architectural documentation for Trade.io, a producti
 ```
 
 ### Real-Time Market Data Flow
+
 ```
 1. Market Data Provider → Ingestion Service: WebSocket stream
 2. Ingestion Service → Validation: Validate data
@@ -150,21 +160,27 @@ This directory contains the architectural documentation for Trade.io, a producti
 ## Service Descriptions
 
 ### Order Service
+
 Manages the complete order lifecycle:
+
 - Order placement with validation
 - Order modification and cancellation
 - Order status tracking
 - Integration with execution simulator
 
 ### Portfolio Service
+
 Tracks user positions and performance:
+
 - Position aggregation from fills
 - PnL calculation (realized and unrealized)
 - Holdings valuation
 - Performance metrics
 
 ### Ledger Service
+
 Double-entry bookkeeping for all money movement:
+
 - Cash deposits and withdrawals
 - Trade executions (debit/credit)
 - Fees and commissions
@@ -172,14 +188,18 @@ Double-entry bookkeeping for all money movement:
 - Ledger balancing and reconciliation
 
 ### Market Data Service
+
 Ingests and serves market data:
+
 - Real-time quote ingestion
 - Historical bar data
 - Price snapshots
 - Symbol metadata
 
 ### Execution Simulator
+
 Simulates order fills for paper trading:
+
 - Market order immediate fill
 - Limit order conditional fill
 - Partial fills
@@ -187,7 +207,9 @@ Simulates order fills for paper trading:
 - Time-in-force handling
 
 ### Risk Engine
+
 Enforces risk limits:
+
 - Position size limits
 - Concentration limits
 - Buying power checks
@@ -195,14 +217,18 @@ Enforces risk limits:
 - Trading hours validation
 
 ### Audit Log Service
+
 Immutable append-only audit trail:
+
 - All state changes logged
 - Actor attribution
 - Request correlation
 - Compliance reporting
 
 ### Admin Service
+
 Administrative operations:
+
 - User management
 - Risk limit configuration
 - Symbol allowlist/blocklist
@@ -214,6 +240,7 @@ Administrative operations:
 To be finalized in Phase 0 issues, but likely choices:
 
 ### Backend
+
 - **Language**: TypeScript (strict mode)
 - **Runtime**: Node.js 20+
 - **API Framework**: tRPC (type-safe) or Express/Fastify (REST)
@@ -222,17 +249,20 @@ To be finalized in Phase 0 issues, but likely choices:
 - **Testing**: Vitest (unit), Supertest (integration)
 
 ### Frontend
+
 - **Framework**: Nuxt 3 (Vue) or Next.js 14 (React)
 - **State**: Pinia (Vue) or Zustand (React)
 - **Forms**: VeeValidate + Zod or React Hook Form + Zod
 - **UI**: TailwindCSS + shadcn-vue/ui
 
 ### Database
+
 - **Primary**: PostgreSQL 15+
 - **Caching**: Redis
 - **Search**: PostgreSQL full-text
 
 ### Infrastructure
+
 - **Hosting**: Vercel, Railway, or Render
 - **Database**: Supabase, Neon, or PlanetScale
 - **CI/CD**: GitHub Actions
@@ -241,6 +271,7 @@ To be finalized in Phase 0 issues, but likely choices:
 ## Scalability Considerations
 
 ### Current Scope (Phase 0-7)
+
 - Single region deployment
 - Vertical scaling (larger instances)
 - Read replicas for reporting
@@ -248,6 +279,7 @@ To be finalized in Phase 0 issues, but likely choices:
 - Connection pooling
 
 ### Future Enhancements (Out of Scope)
+
 - Multi-region deployment
 - Sharding by account
 - Event-driven architecture (message queues)
@@ -259,6 +291,7 @@ To be finalized in Phase 0 issues, but likely choices:
 See [../security/](../security/) for detailed security documentation.
 
 Key security layers:
+
 1. **Network**: HTTPS only, CORS configured
 2. **Authentication**: JWT or session-based
 3. **Authorization**: Role-based + account-based
@@ -270,18 +303,21 @@ Key security layers:
 ## Deployment Architecture
 
 ### Development
+
 - Local PostgreSQL (Docker Compose)
 - Local Redis (Docker Compose)
 - Environment: `.env.local`
 - Hot reload enabled
 
 ### Staging
+
 - Cloud PostgreSQL (Supabase/Neon/PlanetScale)
 - Cloud Redis
 - Environment: `.env.staging`
 - CI deployment on merge to `develop`
 
 ### Production
+
 - Cloud PostgreSQL with backups
 - Cloud Redis with persistence
 - Environment: `.env.production`

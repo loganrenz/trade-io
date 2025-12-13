@@ -1,17 +1,21 @@
 # Issue 0003: Dev Environment
 
 ## Status
+
 - **Current Status**: READY
 - **Phase**: 0 - Repository Baseline & Tooling
 - **Dependencies**: Previous issues
 
 ## Goal
+
 Set up local development environment with Docker Compose
 
 ## Context
+
 Phase 0 infrastructure setup. See AGENTS.md for detailed requirements.
 
 ## Implementation Plan
+
 1. Research best practices
 2. Install required dependencies
 3. Create configuration files
@@ -20,11 +24,13 @@ Phase 0 infrastructure setup. See AGENTS.md for detailed requirements.
 6. Commit changes
 
 ## Files to Create/Modify
+
 - Configuration files for the specific tool
 - Documentation updates
 - Test files to verify setup
 
 ## Acceptance Criteria
+
 - [ ] Tool installed and configured
 - [ ] Configuration follows best practices
 - [ ] Documentation updated
@@ -32,19 +38,23 @@ Phase 0 infrastructure setup. See AGENTS.md for detailed requirements.
 - [ ] CI integration (if applicable)
 
 ## Security Checklist
+
 - [ ] No secrets in config files
 - [ ] Secure defaults used
 - [ ] Dependencies scanned for vulnerabilities
 
 ## Estimated Complexity
+
 **Size**: M (Medium)
 **Token Budget**: ~30k tokens
 
 ## Related Issues
+
 - Depends on: Previous issues in Phase 0
 - Part of: Phase 0 baseline
 
 ## Definition of Done
+
 - [ ] All acceptance criteria met
 - [ ] Documentation complete
 - [ ] Commit: `feat(tooling): setup dev-environment - Refs #0003`

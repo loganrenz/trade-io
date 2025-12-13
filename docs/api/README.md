@@ -15,6 +15,7 @@ API specifications and integration guides for Trade.io.
 ## API Style
 
 Trade.io uses **tRPC** (type-safe RPC) for the API layer. This provides:
+
 - End-to-end type safety
 - Automatic TypeScript types for clients
 - No manual API documentation generation needed
@@ -67,6 +68,7 @@ All errors follow a consistent format:
 ```
 
 **Error Codes:**
+
 - `UNAUTHORIZED`: Authentication failed
 - `FORBIDDEN`: User lacks permission
 - `NOT_FOUND`: Resource not found
@@ -81,6 +83,7 @@ All errors follow a consistent format:
 - **General API**: 1000 requests per minute per user
 
 Rate limit headers:
+
 ```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -92,19 +95,22 @@ X-RateLimit-Reset: 1609459200
 Write operations support idempotency via the `Idempotency-Key` header:
 
 ```typescript
-await client.orders.place.mutate({
-  accountId: '...',
-  symbol: 'AAPL',
-  side: 'BUY',
-  quantity: 10,
-  orderType: 'MARKET',
-}, {
-  context: {
-    headers: {
-      'Idempotency-Key': 'unique-key-123',
-    },
+await client.orders.place.mutate(
+  {
+    accountId: '...',
+    symbol: 'AAPL',
+    side: 'BUY',
+    quantity: 10,
+    orderType: 'MARKET',
   },
-});
+  {
+    context: {
+      headers: {
+        'Idempotency-Key': 'unique-key-123',
+      },
+    },
+  }
+);
 ```
 
 Retrying with the same key returns the original response.
@@ -143,17 +149,20 @@ await client.orders.list.query({
 ## API Endpoints
 
 ### Authentication
+
 - `auth.login` - Login with email/password
 - `auth.signup` - Create new account
 - `auth.logout` - Logout current session
 - `auth.refresh` - Refresh access token
 
 ### Users
+
 - `user.getProfile` - Get current user profile
 - `user.updateProfile` - Update profile
 - `user.changePassword` - Change password
 
 ### Accounts
+
 - `accounts.list` - List user's accounts
 - `accounts.get` - Get account details
 - `accounts.create` - Create new account
@@ -162,6 +171,7 @@ await client.orders.list.query({
 - `accounts.removeMember` - Remove account member
 
 ### Orders
+
 - `orders.place` - Place new order
 - `orders.list` - List orders
 - `orders.get` - Get order details
@@ -170,16 +180,19 @@ await client.orders.list.query({
 - `orders.history` - Get order history
 
 ### Positions
+
 - `positions.list` - List current positions
 - `positions.get` - Get position details
 - `positions.history` - Position history
 
 ### Portfolio
+
 - `portfolio.summary` - Get portfolio summary
 - `portfolio.performance` - Get performance metrics
 - `portfolio.transactions` - Transaction history
 
 ### Market Data
+
 - `instruments.search` - Search instruments
 - `instruments.get` - Get instrument details
 - `quotes.latest` - Get latest quote
@@ -187,6 +200,7 @@ await client.orders.list.query({
 - `bars.get` - Get OHLCV bars
 
 ### Admin
+
 - `admin.users.list` - List all users
 - `admin.users.suspend` - Suspend user
 - `admin.riskLimits.set` - Set risk limits
@@ -195,6 +209,7 @@ await client.orders.list.query({
 ## Webhooks (Future)
 
 Webhooks for real-time notifications (planned):
+
 - Order fills
 - Account alerts
 - Price alerts
@@ -202,6 +217,7 @@ Webhooks for real-time notifications (planned):
 ## SDK (Future)
 
 Official SDKs planned for:
+
 - TypeScript/JavaScript
 - Python
 - Go

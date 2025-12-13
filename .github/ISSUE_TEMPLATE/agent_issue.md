@@ -7,7 +7,9 @@ assignees: ''
 ---
 
 ## Status
+
 <!-- Update as work progresses -->
+
 - **Current Status**: READY
 - **Assigned Agent**: None
 - **Started**: Not started
@@ -15,29 +17,35 @@ assignees: ''
 - **Dependencies**: None
 
 ## Goal
+
 <!-- One-sentence description of what this issue accomplishes -->
 
-
 ## Context
+
 <!-- Why this issue matters, how it fits into the larger system -->
 
-
 ## Scope
+
 <!-- What IS included in this issue -->
 
 ### Included
-- 
-- 
-- 
+
+-
+-
+-
 
 ### Out of Scope
+
 <!-- What is NOT included (to prevent scope creep) -->
-- 
-- 
-- 
+
+-
+-
+-
 
 ## Prerequisites
+
 <!-- What must be complete before starting this issue -->
+
 - [ ] Issue #XXXX completed
 - [ ] Dependencies installed
 - [ ] Environment configured
@@ -45,45 +53,52 @@ assignees: ''
 ## Implementation Plan
 
 ### Step 1: [Description]
+
 <!-- Detailed step-by-step plan -->
 
 **Files to create:**
+
 - `path/to/file.ts`
 
 **Files to modify:**
+
 - `path/to/existing.ts`
 
 **What to do:**
-1. 
-2. 
-3. 
+
+1.
+2.
+3.
 
 ### Step 2: [Description]
 
 **Files to create:**
-- 
 
-**Files to modify:**
-- 
+- **Files to modify:**
 
-**What to do:**
-1. 
-2. 
+- **What to do:**
+
+1.
+2.
 
 ### Step 3: [Description]
+
 <!-- Testing, documentation, etc. -->
 
 ## Files to Create/Modify
 
 ### New Files
+
 - [ ] `path/to/new-file.ts` - Description
 - [ ] `path/to/another-file.ts` - Description
 
 ### Modified Files
+
 - [ ] `path/to/existing.ts` - What changes
 - [ ] `path/to/config.ts` - What changes
 
 ### Documentation
+
 - [ ] `docs/path/to/doc.md` - What to document
 
 ## Acceptance Criteria
@@ -99,17 +114,20 @@ assignees: ''
 ## Tests Required
 
 ### Unit Tests
+
 - [ ] Test case 1
 - [ ] Test case 2
-- [ ] Edge case: 
-- [ ] Error case: 
+- [ ] Edge case:
+- [ ] Error case:
 
 ### Integration Tests
-- [ ] API test: 
-- [ ] Database test: 
+
+- [ ] API test:
+- [ ] Database test:
 
 ### E2E Tests (if applicable)
-- [ ] User flow: 
+
+- [ ] User flow:
 
 ## Security Checklist
 
@@ -123,23 +141,23 @@ assignees: ''
 - [ ] Error messages don't leak sensitive info
 
 ## Security Notes
+
 <!-- Specific security considerations for this issue -->
 
-
-
 ## Performance Considerations
+
 <!-- Any performance implications to be aware of -->
-
-
 
 ## Database Changes
 
 ### Migrations
+
 - [ ] Migration file: `YYYYMMDDHHMMSS_description.sql`
 - [ ] Migration tested (up and down)
 - [ ] Indexes added for query patterns
 
 ### Schema Changes
+
 ```sql
 -- If applicable, include schema changes here
 
@@ -148,46 +166,55 @@ assignees: ''
 ## API Changes
 
 ### New Endpoints
+
 - `POST /api/path` - Description
 
 ### Modified Endpoints
+
 - `GET /api/path` - What changed
 
 ### Request/Response Schemas
+
 ```typescript
 // Include Zod schemas or TypeScript types
-
 ```
 
 ## Environment Variables
 
 ### New Variables
+
 ```bash
 NEW_VAR_NAME=          # Description, default value
 ```
 
 ### Modified Variables
+
 <!-- If any existing vars change -->
 
 ## Dependencies
 
 ### New Dependencies
+
 ```bash
 npm install package-name
 ```
 
 ### Why Needed
+
 <!-- Justification for new dependencies -->
 
 ## Rollback Plan
+
 <!-- If something goes wrong, how to rollback -->
 
 1. Revert migration: `npm run db:migrate:rollback`
 2. Revert code changes: `git revert <commit>`
-3. 
+3.
 
 ## Estimated Complexity
+
 <!-- S = Small, M = Medium, L = Large -->
+
 **Size**: M
 
 **Estimated Token Budget**: ~30k tokens
@@ -195,15 +222,16 @@ npm install package-name
 **Time Estimate**: 2-3 hours for experienced developer
 
 ## Related Issues
+
 <!-- Link to related issues -->
+
 - Depends on: #XXXX
 - Blocks: #YYYY
 - Related: #ZZZZ
 
 ## Additional Notes
+
 <!-- Any other context, links, or information -->
-
-
 
 ## Definition of Done
 
@@ -222,7 +250,8 @@ Before marking this issue complete, verify:
 
 ---
 
-**Agent Instructions**: 
+**Agent Instructions**:
+
 1. Read this entire issue before starting
 2. Follow the implementation plan step-by-step
 3. Check off items as you complete them

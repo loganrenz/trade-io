@@ -5,6 +5,7 @@ This directory contains Architecture Decision Records documenting key technology
 ## What is an ADR?
 
 An Architecture Decision Record (ADR) captures an important architectural decision along with its context and consequences. Each ADR provides:
+
 - **Context**: The circumstances and constraints that led to the decision
 - **Decision**: The chosen solution or approach
 - **Rationale**: Why this option was selected over alternatives
@@ -45,6 +46,7 @@ An Architecture Decision Record (ADR) captures an important architectural decisi
 Based on the ADRs above, our final technology stack is:
 
 ### Frontend
+
 - **Framework**: Nuxt 3 (Vue 3 with TypeScript)
 - **State Management**: Pinia
 - **UI Framework**: TailwindCSS + shadcn-vue
@@ -52,6 +54,7 @@ Based on the ADRs above, our final technology stack is:
 - **HTTP Client**: tRPC client
 
 ### Backend
+
 - **Runtime**: Node.js 20+
 - **Language**: TypeScript 5+ (strict mode)
 - **API Pattern**: tRPC
@@ -60,12 +63,14 @@ Based on the ADRs above, our final technology stack is:
 - **Auth**: Supabase Auth
 
 ### Database
+
 - **Database**: PostgreSQL 15+
 - **Hosting**: Supabase
 - **ORM**: Prisma
 - **Connection Pooling**: PgBouncer (built into Supabase)
 
 ### Infrastructure
+
 - **Hosting**: Vercel (frontend + API routes)
 - **Database**: Supabase
 - **CI/CD**: GitHub Actions
@@ -104,13 +109,16 @@ Based on the ADRs above, our final technology stack is:
 ## ADR Lifecycle
 
 ### Statuses
+
 - **Proposed**: Under consideration
 - **Accepted**: Approved and implemented
 - **Deprecated**: Superseded by a newer decision
 - **Superseded**: Replaced by another ADR (link to new ADR)
 
 ### Review Schedule
+
 All ADRs should be reviewed:
+
 - **Regularly**: Every 6-12 months
 - **When**: Major framework versions are released
 - **When**: Performance or cost issues arise
@@ -124,46 +132,60 @@ When making significant architectural decisions, document them using this templa
 # ADR XXXX: [Decision Title]
 
 ## Status
+
 [Proposed | Accepted | Deprecated | Superseded]
 
 ## Context
+
 [Describe the circumstances requiring this decision]
 
 ## Decision
+
 [State the chosen solution clearly]
 
 ## Rationale
+
 [Explain why this was chosen]
 
 ### Alternatives Considered
+
 [List other options and why they weren't chosen]
 
 ## Consequences
+
 ### Positive
+
 [Benefits of this decision]
 
 ### Negative
+
 [Drawbacks or limitations]
 
 ### Neutral
+
 [Trade-offs or considerations]
 
 ## Implementation Notes
+
 [Technical details, code examples, setup instructions]
 
 ## Related Decisions
+
 [Links to related ADRs]
 
 ## References
+
 [External documentation, articles, comparisons]
 
 ## Review Date
+
 [When this decision should be reconsidered]
 ```
 
 ## Questions?
 
 For questions about these decisions or to propose changes:
+
 1. Review the specific ADR
 2. Check related ADRs for context
 3. Open a GitHub Discussion to propose revisions

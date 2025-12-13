@@ -93,21 +93,25 @@ Build a production-grade paper trading platform that simulates real trading with
 ## User Personas
 
 ### Trader (Primary)
+
 - **Goals**: Learn trading, test strategies, track performance
 - **Needs**: Easy order placement, real-time data, portfolio view
 - **Pain Points**: Complex UIs, delayed data, unclear PnL
 
 ### Competition Participant
+
 - **Goals**: Compete with others, climb leaderboard
 - **Needs**: Fair execution, accurate scoring, social features
 - **Pain Points**: Unfair advantages, bugs in scoring
 
 ### Administrator
+
 - **Goals**: Manage users, monitor system, handle incidents
 - **Needs**: Admin dashboard, user management, system controls
 - **Pain Points**: Lack of visibility, manual processes
 
 ### Developer/Integrator
+
 - **Goals**: Build on top of platform, automate strategies
 - **Needs**: API access, documentation, SDKs
 - **Pain Points**: Poor docs, breaking changes
@@ -115,6 +119,7 @@ Build a production-grade paper trading platform that simulates real trading with
 ## Core Workflows
 
 ### User Registration & Setup
+
 1. User signs up with email/OAuth
 2. Email verification (if applicable)
 3. Create default cash account
@@ -122,6 +127,7 @@ Build a production-grade paper trading platform that simulates real trading with
 5. User can start trading
 
 ### Place Market Order
+
 1. User selects symbol and quantity
 2. System validates input (symbol exists, quantity positive)
 3. System checks authorization (user owns account)
@@ -138,6 +144,7 @@ Build a production-grade paper trading platform that simulates real trading with
 14. User sees updated portfolio
 
 ### View Portfolio
+
 1. User requests portfolio for account
 2. System validates authorization
 3. System queries positions (aggregated from fills)
@@ -148,6 +155,7 @@ Build a production-grade paper trading platform that simulates real trading with
 8. System returns portfolio summary
 
 ### Cancel Order
+
 1. User requests order cancellation
 2. System validates authorization (user owns order)
 3. System checks order status (only PENDING can be cancelled)
@@ -158,6 +166,7 @@ Build a production-grade paper trading platform that simulates real trading with
 ## Data Domains
 
 ### Identity & Access
+
 - Users
 - Accounts
 - Account Members (roles)
@@ -165,6 +174,7 @@ Build a production-grade paper trading platform that simulates real trading with
 - Permissions
 
 ### Trading
+
 - Symbols/Instruments
 - Orders
 - Order Events
@@ -172,24 +182,28 @@ Build a production-grade paper trading platform that simulates real trading with
 - Positions (derived)
 
 ### Financial
+
 - Ledger Accounts
 - Ledger Entries (double-entry)
 - Cash Balances (derived)
 - PnL (calculated)
 
 ### Market Data
+
 - Quotes (real-time)
 - Bars (historical OHLCV)
 - Price Snapshots
 - Trading Sessions
 
 ### Compliance & Risk
+
 - Audit Log
 - Risk Limits
 - Symbol Restrictions
 - Trading Halts
 
 ### Admin
+
 - User Management
 - System Configuration
 - Feature Flags
@@ -198,6 +212,7 @@ Build a production-grade paper trading platform that simulates real trading with
 ## Quality Attributes
 
 ### Security
+
 - **Authentication**: Every request authenticated
 - **Authorization**: Explicit access checks
 - **Audit**: Complete audit trail
@@ -205,24 +220,28 @@ Build a production-grade paper trading platform that simulates real trading with
 - **Encryption**: TLS in transit, at rest (DB default)
 
 ### Performance
+
 - **Response Time**: < 200ms for reads, < 500ms for writes (p95)
 - **Throughput**: Support 100+ concurrent users initially
 - **Scalability**: Horizontal scaling via stateless services
 - **Caching**: Redis for hot data (quotes, sessions)
 
 ### Reliability
+
 - **Availability**: 99.9% uptime target
 - **Data Integrity**: ACID transactions for critical operations
 - **Backup**: Daily database backups
 - **Recovery**: RPO < 24 hours, RTO < 2 hours
 
 ### Maintainability
+
 - **Code Quality**: TypeScript strict mode, linting
 - **Testing**: >80% code coverage target
 - **Documentation**: Comprehensive docs for all subsystems
 - **Monitoring**: Logging, metrics, alerting
 
 ### Usability
+
 - **Responsive**: Works on desktop and mobile
 - **Intuitive**: Clear navigation and workflows
 - **Fast**: Optimistic UI updates
@@ -231,6 +250,7 @@ Build a production-grade paper trading platform that simulates real trading with
 ## Technical Constraints
 
 ### Must Have
+
 - TypeScript for type safety
 - PostgreSQL for data integrity
 - Zod for runtime validation
@@ -238,6 +258,7 @@ Build a production-grade paper trading platform that simulates real trading with
 - No secrets in code
 
 ### Should Have
+
 - tRPC for type-safe APIs (or well-typed REST)
 - Prisma/Drizzle for type-safe database access
 - Modern frontend framework (Nuxt/Next)
@@ -245,6 +266,7 @@ Build a production-grade paper trading platform that simulates real trading with
 - CI/CD automation
 
 ### Nice to Have
+
 - WebSocket for real-time updates
 - Background job processing
 - Multi-currency support
@@ -277,18 +299,21 @@ Build a production-grade paper trading platform that simulates real trading with
 ## Success Metrics
 
 ### User Engagement
+
 - Daily active users
 - Orders placed per user per day
 - Session duration
 - Return rate (weekly)
 
 ### System Health
+
 - API error rate < 0.1%
 - API latency p95 < 500ms
 - Database query performance
 - Cache hit rate > 90%
 
 ### Data Quality
+
 - Order fill accuracy
 - PnL calculation correctness
 - Ledger balancing (always balanced)

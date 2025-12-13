@@ -1,0 +1,29 @@
+# Nuxt Ignore
+# Files and directories to exclude from Nuxt builds
+
+# Tests
+tests/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+
+# Test configuration
+vitest.config.ts
+playwright.config.ts
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Development files
+.env.example
+.nvmrc
+Deleteme
+
+# CI/CD
+.github/
+
+# Database migrations (included via Prisma, not Nuxt)
+prisma/migrations/

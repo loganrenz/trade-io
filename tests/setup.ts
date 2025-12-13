@@ -1,13 +1,19 @@
 import { beforeAll, afterAll, afterEach } from 'vitest';
+import { config } from 'dotenv';
+
+// Load environment variables for tests
+config();
 
 beforeAll(async () => {
   // Global setup before all tests
-  console.warn('Test suite starting...');
+  // eslint-disable-next-line no-console
+  console.log('Test suite starting...');
 });
 
 afterAll(async () => {
   // Global teardown after all tests
-  console.warn('Test suite complete.');
+  // eslint-disable-next-line no-console
+  console.log('Test suite complete.');
 });
 
 afterEach(async () => {
