@@ -5,17 +5,32 @@
 import { db } from './db';
 import { logger } from './logger';
 import type { Prisma } from '@prisma/client';
+import { z } from 'zod';
 
 export interface AuditLogEntry {
-  actor?: string; // User ID who performed the action
+  actor?: string | null; // User ID who performed the action
   action: string; // Action type (e.g., 'ORDER_PLACED', 'ACCOUNT_CREATED')
   resource: string; // Resource type (e.g., 'order', 'account')
-  resourceId?: string; // ID of the affected resource
-  metadata?: Record<string, unknown>; // Additional context
-  requestId?: string; // For request correlation
-  ipAddress?: string; // Client IP address
-  userAgent?: string; // Client user agent
+  resourceId?: string | null; // ID of the affected resource
+  metadata?: Record<string, unknown> | null; // Additional context
+  requestId?: string | null; // For request correlation
+  ipAddress?: string | null; // Client IP address
+  userAgent?: string | null; // Client user agent
 }
+
+/**
+ * Zod schema for audit log entry validation
+ */
+const auditLogEntrySchema = z.object({
+  actor: z.string().uuid().optional().nullable(),
+  action: z.string().min(1),
+  resource: z.string().min(1),
+  resourceId: z.string().uuid().optional().nullable(),
+  metadata: z.record(z.unknown()).optional().nullable(),
+  requestId: z.string().optional().nullable(),
+  ipAddress: z.string().optional().nullable(),
+  userAgent: z.string().optional().nullable(),
+});
 
 /**
  * Create an audit log entry
