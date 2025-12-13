@@ -163,13 +163,101 @@ model Instrument {
   name        String
   type        String   @default("STOCK") @db.VarChar(20) // STOCK, ETF, OPTION, etc.
   exchange    String   @db.VarChar(10)
+  currency    String   @default("USD") @db.VarChar(3)
+  sector      String?  @db.VarChar(50)
+  industry    String?  @db.VarChar(50)
+  marketCap   Decimal? @db.Decimal(20, 2)
   isActive    Boolean  @default(true)
   isTradeable Boolean  @default(true)
   updatedAt   DateTime @updatedAt
   
+  quotes       Quote[]
+  bars         Bar[]
+  sessions     TradingSession[]
+  
   @@map("instruments")
   @@index([symbol])
   @@index([isActive, isTradeable])
+  @@index([exchange])
+  @@index([type])
+}
+
+// Quote - Real-time or delayed quote data
+model Quote {
+  id            String   @id @default(uuid()) @db.Uuid
+  instrumentId  String   @db.Uuid
+  symbol        String   @db.VarChar(10) // Denormalized for faster queries
+  timestamp     DateTime
+  bid           Decimal? @db.Decimal(18, 4)
+  ask           Decimal? @db.Decimal(18, 4)
+  bidSize       Int?
+  askSize       Int?
+  last          Decimal  @db.Decimal(18, 4)
+  lastSize      Int?
+  volume        BigInt   @default(0) // Daily volume
+  open          Decimal? @db.Decimal(18, 4)
+  high          Decimal? @db.Decimal(18, 4)
+  low           Decimal? @db.Decimal(18, 4)
+  close         Decimal? @db.Decimal(18, 4) // Previous close
+  change        Decimal? @db.Decimal(18, 4)
+  changePercent Decimal? @db.Decimal(8, 4)
+  createdAt     DateTime @default(now())
+  
+  instrument    Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  
+  @@map("quotes")
+  @@index([symbol, timestamp(sort: Desc)])
+  @@index([instrumentId, timestamp(sort: Desc)])
+  @@index([timestamp(sort: Desc)])
+}
+
+// Bar - OHLCV data for charting and backtesting
+model Bar {
+  id           String   @id @default(uuid()) @db.Uuid
+  instrumentId String   @db.Uuid
+  symbol       String   @db.VarChar(10) // Denormalized for faster queries
+  timeframe    String   @db.VarChar(10) // 1min, 5min, 15min, 1hour, 1day
+  timestamp    DateTime // Start of the bar period
+  open         Decimal  @db.Decimal(18, 4)
+  high         Decimal  @db.Decimal(18, 4)
+  low          Decimal  @db.Decimal(18, 4)
+  close        Decimal  @db.Decimal(18, 4)
+  volume       BigInt
+  vwap         Decimal? @db.Decimal(18, 4) // Volume-weighted average price
+  trades       Int?     // Number of trades in this bar
+  createdAt    DateTime @default(now())
+  
+  instrument   Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  
+  @@unique([symbol, timeframe, timestamp])
+  @@map("bars")
+  @@index([symbol, timeframe, timestamp(sort: Desc)])
+  @@index([instrumentId, timeframe, timestamp(sort: Desc)])
+  @@index([timestamp(sort: Desc)])
+}
+
+// TradingSession - Market hours and trading calendar
+model TradingSession {
+  id            String   @id @default(uuid()) @db.Uuid
+  instrumentId  String?  @db.Uuid // Null = applies to all instruments on exchange
+  exchange      String   @db.VarChar(10)
+  date          DateTime @db.Date
+  sessionType   String   @db.VarChar(20) // REGULAR, PREMARKET, AFTERHOURS
+  openTime      DateTime
+  closeTime     DateTime
+  isOpen        Boolean  @default(true)
+  isTradingDay  Boolean  @default(true)
+  holidayName   String?  @db.VarChar(100)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  instrument    Instrument? @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  
+  @@unique([exchange, date, sessionType])
+  @@map("trading_sessions")
+  @@index([exchange, date])
+  @@index([date])
+  @@index([isTradingDay])
 }
 
 // ============================================================================

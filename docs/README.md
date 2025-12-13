@@ -43,6 +43,7 @@ Trade.io is a paper trading platform designed to production standards. It provid
 ## Technology Stack
 
 ### Frontend
+
 - **Framework**: Nuxt 3 (Vue 3) - to be confirmed in Phase 0
 - **State Management**: Pinia
 - **UI Framework**: TailwindCSS + shadcn-vue
@@ -50,6 +51,7 @@ Trade.io is a paper trading platform designed to production standards. It provid
 - **HTTP Client**: tRPC client or fetch
 
 ### Backend
+
 - **Runtime**: Node.js 20+
 - **Language**: TypeScript 5+ (strict mode)
 - **API**: tRPC or REST (to be decided in Phase 0)
@@ -59,11 +61,13 @@ Trade.io is a paper trading platform designed to production standards. It provid
 - **Logging**: Pino
 
 ### Database
+
 - **Primary Database**: PostgreSQL 15+
 - **Caching**: Redis
 - **Search**: PostgreSQL full-text search
 
 ### Infrastructure
+
 - **Hosting**: Vercel, Railway, or Render (to be decided)
 - **Database Hosting**: Supabase, Neon, or PlanetScale (to be decided)
 - **CI/CD**: GitHub Actions

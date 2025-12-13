@@ -6,7 +6,8 @@ This document defines the canonical workflow for AI agents working on the Trade.
 
 ## Project Mission
 
-Build a secure, production-grade paper trading platform (E*TRADE-like) with:
+Build a secure, production-grade paper trading platform (E\*TRADE-like) with:
+
 - Robust account management and authorization
 - Real-time market data integration
 - Complete order lifecycle management
@@ -26,6 +27,7 @@ cat PROGRESS.md
 ```
 
 This file tells you:
+
 - What issue to work on next
 - What's been completed
 - Current project status
@@ -40,11 +42,13 @@ When you use this prompt, the first thing you do is read `PROGRESS.md`.
 The next issue to work on is specified in `PROGRESS.md`. If not specified there:
 
 Issues are stored in `docs/issues/` with numbered prefixes:
+
 - `docs/issues/0001-repo-baseline.md`
 - `docs/issues/0002-db-schema-core.md`
 - etc.
 
 **Issue Selection Rules:**
+
 1. **ALWAYS** check `PROGRESS.md` first for the next issue
 2. Work issues in numerical order unless directed otherwise
 3. Check issue status comments in the file header
@@ -54,17 +58,20 @@ Issues are stored in `docs/issues/` with numbered prefixes:
 ### 2. Branch Naming
 
 Always use this format:
+
 ```
 copilot/<issue-number>-<short-slug>
 ```
 
 Examples:
+
 - `copilot/0001-repo-baseline`
 - `copilot/0023-order-placement-api`
 
 ### 3. Read the Issue Thoroughly
 
 Each issue contains:
+
 - **Goal**: What to accomplish
 - **Context**: Why this matters
 - **Scope**: What's included
@@ -80,6 +87,7 @@ Each issue contains:
 ### 4. Implementation Workflow
 
 #### A. Initial Setup
+
 ```bash
 # Verify you're on the right branch
 git branch --show-current
@@ -93,12 +101,14 @@ cp .env.example .env.local
 ```
 
 #### B. Make Minimal Changes
+
 - Change ONLY what's specified in the issue
 - Follow existing code patterns and conventions
 - Add comprehensive comments only where complexity requires it
 - Use TypeScript strict mode throughout
 
 #### C. Run Linters
+
 ```bash
 # Format code
 npm run format
@@ -111,6 +121,7 @@ npm run typecheck
 ```
 
 #### D. Run Tests
+
 ```bash
 # Unit tests only
 npm run test:unit
@@ -129,6 +140,7 @@ npm run test:coverage
 ```
 
 #### E. Database Migrations
+
 When touching the database schema:
 
 ```bash
@@ -146,6 +158,7 @@ npm run db:schema:verify
 ```
 
 **Migration Rules:**
+
 - Never edit existing migrations that have been merged
 - Always test both `up` and `down` migrations
 - Include data migrations separately from schema migrations
@@ -153,7 +166,9 @@ npm run db:schema:verify
 - Document breaking changes in migration comments
 
 #### F. Documentation Updates
+
 When changes affect:
+
 - **API**: Update `docs/api/` with endpoint specs
 - **Architecture**: Update `docs/architecture/`
 - **Security**: Update `docs/security/` if authZ/authN changes
@@ -162,6 +177,7 @@ When changes affect:
 ### 5. Commit Rules
 
 #### Commit Message Format
+
 ```
 <type>(<scope>): <short summary>
 
@@ -171,6 +187,7 @@ Refs: #<issue-number>
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only
@@ -181,6 +198,7 @@ Refs: #<issue-number>
 - `security`: Security improvements
 
 **Examples:**
+
 ```
 feat(orders): add order placement API
 
@@ -197,6 +215,7 @@ Refs: #0012
 ```
 
 #### Commit Frequency
+
 - Commit logical units of work
 - Each commit should pass tests
 - Don't commit broken code
@@ -207,6 +226,7 @@ Refs: #0012
 Before marking an issue complete, verify ALL of these:
 
 #### Code Quality
+
 - [ ] All acceptance criteria met
 - [ ] Code follows existing patterns and conventions
 - [ ] TypeScript strict mode with no `any` types (unless justified)
@@ -215,6 +235,7 @@ Before marking an issue complete, verify ALL of these:
 - [ ] All new code has appropriate comments/JSDoc
 
 #### Testing
+
 - [ ] Unit tests written and passing
 - [ ] Integration tests written and passing (if applicable)
 - [ ] E2E tests written and passing (if applicable)
@@ -223,6 +244,7 @@ Before marking an issue complete, verify ALL of these:
 - [ ] Error paths tested
 
 #### Security
+
 - [ ] Security checklist reviewed (see below)
 - [ ] No secrets in code or committed files
 - [ ] Input validation added for all user inputs
@@ -232,6 +254,7 @@ Before marking an issue complete, verify ALL of these:
 - [ ] XSS risks mitigated (if UI changes)
 
 #### Database
+
 - [ ] Migrations tested (up and down)
 - [ ] Indexes added for query patterns
 - [ ] Constraints enforced at DB level
@@ -239,6 +262,7 @@ Before marking an issue complete, verify ALL of these:
 - [ ] Data model documentation updated
 
 #### Documentation
+
 - [ ] README updated if setup changes
 - [ ] API docs updated if endpoints changed
 - [ ] Architecture docs updated if design changed
@@ -247,6 +271,7 @@ Before marking an issue complete, verify ALL of these:
 - [ ] **PROGRESS.md updated with completed work (MANDATORY)**
 
 #### CI/CD
+
 - [ ] All CI checks passing
 - [ ] No new warnings in build output
 - [ ] Docker build succeeds (if applicable)
@@ -271,23 +296,28 @@ After completing your issues, you MUST update `PROGRESS.md` in the repository ro
 
 ```markdown
 ### [UTC timestamp] - [Your agent identifier]
+
 **Action**: [Brief description of what you accomplished]
 
 **Issues Completed**:
+
 - #0001 - [Issue title] ✅
 - #0002 - [Issue title] ✅
 
 **Files Created/Modified**:
+
 - `path/to/file.ts` - [What changed]
 - `path/to/another.ts` - [What changed]
 
 **Tests Added**:
+
 - [Brief summary of tests added]
 
 **Next Steps**: [What the next agent should do]
 
 **Branch**: [Your branch name]
-**Commits**: 
+**Commits**:
+
 - [short hash] - [commit message]
 - [short hash] - [commit message]
 ```
@@ -303,6 +333,7 @@ See `PROGRESS.md` for a complete example of how to update the file.
 ### Never Commit Secrets
 
 **Prohibited:**
+
 - API keys, tokens, passwords in code
 - `.env` files (use `.env.example` as template)
 - Private keys or certificates
@@ -310,6 +341,7 @@ See `PROGRESS.md` for a complete example of how to update the file.
 - Session secrets
 
 **Allowed:**
+
 - `.env.example` with placeholder values
 - Public configuration
 - Development-only safe defaults
@@ -317,6 +349,7 @@ See `PROGRESS.md` for a complete example of how to update the file.
 ### Environment Variable Hygiene
 
 **Required environment variables:**
+
 ```bash
 # Database
 DATABASE_URL=              # Postgres connection string
@@ -340,6 +373,7 @@ REDIS_URL=                 # Redis connection string
 ```
 
 **Loading order:**
+
 1. `.env.local` (git-ignored, local dev overrides)
 2. `.env.development` / `.env.production` (committed, environment defaults)
 3. System environment variables (highest priority)
@@ -347,16 +381,19 @@ REDIS_URL=                 # Redis connection string
 ### Least Privilege Principles
 
 **Database:**
+
 - Application DB user should NOT have DDL privileges in production
 - Use separate migration user for schema changes
 - Read-only replicas for reporting queries
 
 **API Access:**
+
 - Every endpoint requires authentication (except public health checks)
 - Authorization checks based on account membership
 - API keys have scope limits
 
 **Admin Operations:**
+
 - Require elevated privileges
 - Log all admin actions with actor
 - Consider 2FA/approval workflow for destructive actions
@@ -364,22 +401,24 @@ REDIS_URL=                 # Redis connection string
 ### Row-Level Security (RLS) / ACL Guidelines
 
 **If using Supabase (RLS):**
+
 ```sql
 -- Example: Users can only see their own accounts
 CREATE POLICY "users_own_accounts" ON accounts
   FOR SELECT
   USING (auth.uid() = user_id OR auth.uid() IN (
-    SELECT user_id FROM account_members 
+    SELECT user_id FROM account_members
     WHERE account_id = accounts.id
   ));
 ```
 
 **If using custom API (ACL):**
+
 ```typescript
 // Example: Check user has access to account
 async function checkAccountAccess(userId: string, accountId: string) {
   const membership = await db.accountMember.findFirst({
-    where: { userId, accountId }
+    where: { userId, accountId },
   });
   if (!membership) {
     throw new ForbiddenError('Access denied');
@@ -389,6 +428,7 @@ async function checkAccountAccess(userId: string, accountId: string) {
 ```
 
 **Principles:**
+
 - Default deny (explicit allow only)
 - Check at query time, not just endpoint level
 - Verify on both read and write operations
@@ -397,6 +437,7 @@ async function checkAccountAccess(userId: string, accountId: string) {
 ### Input Validation
 
 **Use Zod for all inputs:**
+
 ```typescript
 import { z } from 'zod';
 
@@ -415,6 +456,7 @@ const validated = orderSchema.parse(req.body);
 ```
 
 **Validation rules:**
+
 - Validate all user inputs
 - Validate at API boundary
 - Sanitize for SQL/XSS
@@ -424,6 +466,7 @@ const validated = orderSchema.parse(req.body);
 ### Audit Logging
 
 **Every state change must be logged:**
+
 ```typescript
 await db.auditLog.create({
   data: {
@@ -440,11 +483,12 @@ await db.auditLog.create({
     requestId: req.id,
     ipAddress: req.ip,
     timestamp: new Date(),
-  }
+  },
 });
 ```
 
 **Audit log is append-only:**
+
 - Never UPDATE or DELETE audit logs
 - Retention policy via archival, not deletion
 - Include correlation IDs for request tracing
@@ -481,18 +525,21 @@ Before completing any issue, verify:
 ```
 
 **Unit Tests (70%):**
+
 - Pure functions, business logic
 - Validation schemas
 - Utility functions
 - No database, no network
 
 **Integration Tests (25%):**
+
 - API endpoints
 - Database queries
 - Service boundaries
 - With test database
 
 **E2E Tests (5%):**
+
 - Critical user flows
 - End-to-end scenarios
 - Against full stack
@@ -516,6 +563,7 @@ tests/
 ### Test Data
 
 **Use factories for consistent test data:**
+
 ```typescript
 // tests/factories/user.factory.ts
 export function createTestUser(overrides = {}) {
@@ -530,6 +578,7 @@ export function createTestUser(overrides = {}) {
 ```
 
 **Cleanup after tests:**
+
 ```typescript
 afterEach(async () => {
   await db.order.deleteMany();
@@ -541,6 +590,7 @@ afterEach(async () => {
 ### CI Test Execution
 
 CI will run:
+
 1. Linters (ESLint, Prettier)
 2. Type checking (tsc)
 3. Unit tests
@@ -555,19 +605,20 @@ CI will run:
 ### Idempotency Keys
 
 **For write operations:**
+
 ```typescript
 async function placeOrder(params: OrderParams, idempotencyKey: string) {
   // Check if already processed
   const existing = await db.order.findUnique({
-    where: { idempotencyKey }
+    where: { idempotencyKey },
   });
   if (existing) {
     return existing; // Return existing result
   }
-  
+
   // Process new request
   const order = await db.order.create({
-    data: { ...params, idempotencyKey }
+    data: { ...params, idempotencyKey },
   });
   return order;
 }
@@ -576,19 +627,20 @@ async function placeOrder(params: OrderParams, idempotencyKey: string) {
 ### Optimistic Concurrency
 
 **Use version/timestamp for concurrent updates:**
+
 ```typescript
 async function updateOrder(orderId: string, updates: any, expectedVersion: number) {
   const result = await db.order.updateMany({
-    where: { 
+    where: {
       id: orderId,
-      version: expectedVersion // Only update if version matches
+      version: expectedVersion, // Only update if version matches
     },
     data: {
       ...updates,
-      version: expectedVersion + 1
-    }
+      version: expectedVersion + 1,
+    },
   });
-  
+
   if (result.count === 0) {
     throw new ConcurrencyError('Order was modified by another request');
   }
@@ -598,9 +650,13 @@ async function updateOrder(orderId: string, updates: any, expectedVersion: numbe
 ### Error Handling
 
 **Use typed errors:**
+
 ```typescript
 export class ValidationError extends Error {
-  constructor(message: string, public field?: string) {
+  constructor(
+    message: string,
+    public field?: string
+  ) {
     super(message);
     this.name = 'ValidationError';
   }
@@ -645,6 +701,7 @@ Issues progress through these states:
 ### Marking Issues Done
 
 When an issue is complete:
+
 1. Update the issue file header with status and completion date
 2. **Update `PROGRESS.md` with your work (MANDATORY)** - see section 7 above
 3. Update `docs/issues/README.md` progress tracker (if needed)
@@ -655,6 +712,7 @@ When an issue is complete:
 ### Reporting Blockers
 
 If you encounter a blocker:
+
 1. Document the blocker in the issue file
 2. Update status to `[BLOCKED]`
 3. Create a new issue for the blocker if needed
@@ -689,12 +747,14 @@ If you encounter a blocker:
 ### Stack Decisions (to be finalized in Phase 0)
 
 **Frontend:**
+
 - Framework: Nuxt 3 (Vue 3) or Next.js (React)
 - State: Pinia (Vue) or Zustand (React)
 - UI: TailwindCSS + shadcn/ui or similar
 - Forms: Zod + form library
 
 **Backend:**
+
 - Runtime: Node.js 20+
 - Language: TypeScript 5+
 - API: tRPC or REST (Express/Fastify)
@@ -702,11 +762,13 @@ If you encounter a blocker:
 - Auth: Supabase Auth or Clerk or custom JWT
 
 **Database:**
+
 - Primary: PostgreSQL 15+
 - Caching: Redis
 - Search: PostgreSQL full-text or Typesense
 
 **Infrastructure:**
+
 - Hosting: Vercel / Railway / Render
 - Database: Supabase / Neon / PlanetScale
 - CI/CD: GitHub Actions
@@ -714,6 +776,7 @@ If you encounter a blocker:
 ### Code Generation
 
 Use code generators where available:
+
 ```bash
 # Generate API types from schema
 npm run codegen:api
@@ -730,21 +793,25 @@ npm run generate:test <file-path>
 ### Common Issues
 
 **Tests failing with DB errors:**
+
 - Ensure test DB is running
 - Run migrations on test DB
 - Check connection string in test env
 
 **Type errors after schema change:**
+
 - Regenerate DB client: `npm run db:generate`
 - Regenerate API types: `npm run codegen:api`
 - Restart TypeScript server in editor
 
 **Linter errors:**
+
 - Run `npm run lint:fix` to auto-fix
 - Check `.eslintrc.js` for rules
 - Some rules require manual fixes
 
 **Migration conflicts:**
+
 - Never rebase already-merged migrations
 - Create new migration to fix issues
 - Coordinate with team on shared branches
@@ -754,6 +821,7 @@ npm run generate:test <file-path>
 Each agent has a limited context window (~100k tokens including input and output).
 
 **Token-saving strategies:**
+
 1. Read only the files you need to modify
 2. Use targeted searches instead of browsing
 3. Focus on the current issue only
@@ -761,6 +829,7 @@ Each agent has a limited context window (~100k tokens including input and output
 5. If you're running low, complete the minimum viable work and document next steps
 
 **Issue sizing:**
+
 - **S (Small)**: <20k tokens estimated (simple, focused changes)
 - **M (Medium)**: 20-50k tokens estimated (moderate complexity)
 - **L (Large)**: 50-80k tokens estimated (complex, multi-file changes)

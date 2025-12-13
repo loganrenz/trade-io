@@ -2,11 +2,12 @@
 
 ## Project Overview
 
-Trade.io is a production-grade paper trading platform (E*TRADE-like) built with security, testability, and robustness as core principles. This is NOT a toy project—every line of code should meet production standards.
+Trade.io is a production-grade paper trading platform (E\*TRADE-like) built with security, testability, and robustness as core principles. This is NOT a toy project—every line of code should meet production standards.
 
 ## Core Principles
 
 ### 1. Security First
+
 - **Never** suggest code that could introduce security vulnerabilities
 - Always validate user inputs with Zod schemas
 - Use parameterized queries (ORM handles this)
@@ -15,12 +16,14 @@ Trade.io is a production-grade paper trading platform (E*TRADE-like) built with 
 - Never include secrets in code suggestions
 
 ### 2. TypeScript Strict Mode
+
 - Use strict TypeScript—no `any` types unless absolutely necessary
 - Prefer explicit types over inference for public APIs
 - Use discriminated unions for state machines
 - Leverage Zod for runtime validation that matches TypeScript types
 
 ### 3. Test Coverage
+
 - Suggest unit tests alongside business logic
 - Suggest integration tests for API endpoints
 - Use factories for test data, not hardcoded fixtures
@@ -29,21 +32,22 @@ Trade.io is a production-grade paper trading platform (E*TRADE-like) built with 
 ### 4. Code Patterns
 
 #### API Endpoints
+
 ```typescript
 // Good: Validated, authorized, audited
 export async function placeOrder(req: Request, res: Response) {
   // 1. Validate input
   const params = orderPlacementSchema.parse(req.body);
-  
+
   // 2. Authenticate
   const userId = await authenticateRequest(req);
-  
+
   // 3. Authorize
   await checkAccountAccess(userId, params.accountId);
-  
+
   // 4. Execute business logic
   const order = await orderService.placeOrder(params, req.idempotencyKey);
-  
+
   // 5. Audit log
   await auditLog.log({
     actor: userId,
@@ -51,21 +55,22 @@ export async function placeOrder(req: Request, res: Response) {
     resourceId: order.id,
     metadata: params,
   });
-  
+
   // 6. Return response
   return res.json(order);
 }
 ```
 
 #### Database Queries
+
 ```typescript
 // Good: Use ORM/query builder, never string concat
 const orders = await db.order.findMany({
   where: {
     accountId: params.accountId,
-    status: { in: ['PENDING', 'PARTIAL'] }
+    status: { in: ['PENDING', 'PARTIAL'] },
   },
-  orderBy: { createdAt: 'desc' }
+  orderBy: { createdAt: 'desc' },
 });
 
 // Bad: SQL injection risk
@@ -75,6 +80,7 @@ const orders = await db.raw(`
 ```
 
 #### Error Handling
+
 ```typescript
 // Good: Typed errors, safe messages
 try {
@@ -101,6 +107,7 @@ try {
 ### 6. Documentation
 
 Suggest JSDoc for:
+
 - Public API functions
 - Complex business logic
 - Non-obvious behavior
@@ -108,7 +115,7 @@ Suggest JSDoc for:
 ```typescript
 /**
  * Places a new order with idempotency support.
- * 
+ *
  * @param params - Order parameters (validated)
  * @param idempotencyKey - Client-provided idempotency key
  * @returns Created order or existing order if duplicate key
@@ -123,6 +130,7 @@ async function placeOrder(params: OrderParams, idempotencyKey: string): Promise<
 ### 7. Forbidden Patterns
 
 Never suggest:
+
 - Using `any` without a VERY good reason
 - Disabling ESLint rules without explanation
 - Committing secrets or credentials
@@ -137,6 +145,7 @@ Never suggest:
 ### 8. Preferred Libraries
 
 When suggesting packages, prefer:
+
 - **Validation**: Zod
 - **Date/Time**: date-fns
 - **HTTP Client**: fetch API or ky
@@ -145,6 +154,7 @@ When suggesting packages, prefer:
 - **UUID**: crypto.randomUUID()
 
 Avoid:
+
 - moment.js (use date-fns)
 - axios (use fetch or ky)
 - lodash (use native ES6+ when possible)
@@ -155,11 +165,12 @@ Avoid:
 ### Order Lifecycle
 
 Orders follow this state machine:
+
 ```
 PENDING → ACCEPTED → (PARTIAL →)* → FILLED
         ↓         ↓              ↓
       REJECTED  CANCELLED    CANCELLED
-                            
+
 PENDING → EXPIRED
 ```
 
@@ -168,6 +179,7 @@ When suggesting order-related code, respect these transitions.
 ### Financial Calculations
 
 Always use precise decimal math:
+
 ```typescript
 // Good: Use library for financial math
 import { Decimal } from 'decimal.js';
@@ -180,6 +192,7 @@ const totalCost = price * quantity; // Can have rounding errors!
 ### Audit Logging
 
 Every state change should log:
+
 ```typescript
 await auditLog.create({
   actor: userId,           // Who did it
@@ -195,9 +208,10 @@ await auditLog.create({
 ### Idempotency
 
 Write operations should accept idempotency keys:
+
 ```typescript
 const existing = await db.order.findUnique({
-  where: { idempotencyKey }
+  where: { idempotencyKey },
 });
 if (existing) return existing;
 
@@ -207,14 +221,15 @@ if (existing) return existing;
 ### Authorization
 
 Every query should filter by user access:
+
 ```typescript
 // Good: Only return accounts user has access to
 const accounts = await db.account.findMany({
   where: {
     members: {
-      some: { userId }
-    }
-  }
+      some: { userId },
+    },
+  },
 });
 
 // Bad: Return all accounts (security hole!)
@@ -224,29 +239,31 @@ const accounts = await db.account.findMany();
 ## Testing Guidance
 
 ### Unit Test Structure
+
 ```typescript
 describe('OrderService', () => {
   describe('placeOrder', () => {
     it('should create a pending order for valid market order', async () => {
       const params = createTestOrderParams({ orderType: 'MARKET' });
       const order = await orderService.placeOrder(params, 'idempotency-1');
-      
+
       expect(order.status).toBe('PENDING');
       expect(order.orderType).toBe('MARKET');
     });
-    
+
     it('should reject order if insufficient funds', async () => {
       const params = createTestOrderParams({ quantity: 1000000 });
-      
-      await expect(
-        orderService.placeOrder(params, 'idempotency-2')
-      ).rejects.toThrow(InsufficientFundsError);
+
+      await expect(orderService.placeOrder(params, 'idempotency-2')).rejects.toThrow(
+        InsufficientFundsError
+      );
     });
   });
 });
 ```
 
 ### Integration Test Structure
+
 ```typescript
 describe('POST /api/orders', () => {
   it('should place order and return 201', async () => {
@@ -260,7 +277,7 @@ describe('POST /api/orders', () => {
         quantity: 10,
         orderType: 'MARKET',
       });
-      
+
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');
     expect(response.body.status).toBe('PENDING');
@@ -271,6 +288,7 @@ describe('POST /api/orders', () => {
 ## File Organization
 
 Suggest files in this structure:
+
 ```
 src/
   lib/           # Shared utilities
@@ -293,12 +311,14 @@ docs/
 ## Comments and Documentation
 
 Suggest comments for:
+
 - Complex algorithms or business rules
 - Non-obvious workarounds
 - Security-sensitive code
 - Performance optimizations
 
 Don't suggest comments for:
+
 - Obvious code
 - Repeating what the code says
 - Redundant JSDoc
@@ -330,6 +350,7 @@ counter++;
 ## When Suggesting Database Schema
 
 Always include:
+
 - Primary keys (UUID preferred)
 - Foreign key constraints
 - Indexes for common queries
@@ -350,7 +371,7 @@ CREATE TABLE orders (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at TIMESTAMPTZ,
-  
+
   INDEX idx_orders_account_id (account_id),
   INDEX idx_orders_status (status) WHERE deleted_at IS NULL
 );
@@ -359,6 +380,7 @@ CREATE TABLE orders (
 ## Performance Considerations
 
 Suggest optimizations for:
+
 - N+1 query problems (use eager loading)
 - Missing indexes on foreign keys
 - Expensive full table scans

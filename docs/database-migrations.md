@@ -38,6 +38,7 @@ npx prisma migrate dev --name descriptive_migration_name
 ```
 
 This will:
+
 1. Generate SQL for your schema changes
 2. Apply the migration to your local database
 3. Regenerate Prisma Client
@@ -59,6 +60,7 @@ npx prisma migrate reset
 ```
 
 This will:
+
 1. Drop all tables
 2. Apply all migrations from scratch
 3. Run seed data (if configured)
@@ -82,8 +84,8 @@ npx prisma generate
 ### Making Schema Changes
 
 1. **Edit the schema**: Modify `prisma/schema.prisma`
-   
 2. **Create migration**:
+
    ```bash
    npx prisma migrate dev --name your_change_description
    ```
@@ -91,6 +93,7 @@ npx prisma generate
 3. **Review the generated SQL**: Check `prisma/migrations/[timestamp]_your_change_description/migration.sql`
 
 4. **Test the migration**: Run integration tests
+
    ```bash
    npm run test:integration
    ```
@@ -106,6 +109,7 @@ npx prisma generate
 When another developer creates a migration:
 
 1. **Pull the changes**:
+
    ```bash
    git pull
    ```
@@ -114,7 +118,6 @@ When another developer creates a migration:
    ```bash
    npx prisma migrate deploy
    ```
-   
 3. **Regenerate client** (if needed):
    ```bash
    npx prisma generate
@@ -133,12 +136,14 @@ When another developer creates a migration:
 ### Deployment Steps
 
 1. **Backup the database**
+
    ```bash
    # Use your hosting provider's backup tool
    # For Supabase: Done automatically
    ```
 
 2. **Apply migrations**
+
    ```bash
    npx prisma migrate deploy
    ```

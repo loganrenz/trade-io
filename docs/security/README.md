@@ -17,6 +17,7 @@ Security is a first-class concern for Trade.io. This directory contains security
 ### Defense in Depth
 
 Multiple layers of security:
+
 1. Network (HTTPS, CORS)
 2. Authentication (JWT/sessions)
 3. Authorization (RBAC + account-based)
@@ -121,6 +122,7 @@ See [auth.md](./auth.md) for details.
 ### Input Validation
 
 All inputs validated with Zod:
+
 ```typescript
 const schema = z.object({
   symbol: z.string().min(1).max(10),
@@ -131,6 +133,7 @@ const schema = z.object({
 ### Rate Limiting
 
 Critical endpoints rate-limited:
+
 - Login: 5 req/min per IP
 - Order placement: 100 req/min per user
 - API endpoints: 1000 req/min per user
@@ -138,6 +141,7 @@ Critical endpoints rate-limited:
 ### Audit Trail
 
 Every action logged:
+
 - Who (actor)
 - What (action)
 - When (timestamp)
@@ -168,6 +172,7 @@ Every action logged:
 ### Code Review
 
 All PRs reviewed for:
+
 - Authentication/authorization
 - Input validation
 - Secret exposure
@@ -203,6 +208,7 @@ All PRs reviewed for:
 ### Financial Regulations
 
 Paper trading is generally not regulated, but:
+
 - Clearly communicate "paper only"
 - No guarantees of real trading performance
 - Terms of service required

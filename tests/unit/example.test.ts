@@ -10,7 +10,7 @@ describe('Example Test Suite', () => {
       id: 'test-123',
       email: 'test@example.com',
     };
-    
+
     expect(user).toHaveProperty('id');
     expect(user.email).toContain('@');
   });

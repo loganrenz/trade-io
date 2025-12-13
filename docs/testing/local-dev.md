@@ -86,16 +86,19 @@ Visit: `http://localhost:3000`
 The `docker-compose.yml` file includes:
 
 ### PostgreSQL
+
 - **Port**: 5432
 - **Database**: tradeio_dev
 - **User**: postgres
 - **Password**: postgres
 
 ### Redis
+
 - **Port**: 6379
 - **No password** (development only)
 
 ### pgAdmin (Optional)
+
 - **Port**: 5050
 - **Email**: admin@trade.io
 - **Password**: admin
@@ -168,6 +171,7 @@ npm run db:studio
 ### Debugging
 
 #### VS Code
+
 Add to `.vscode/launch.json`:
 
 ```json
@@ -193,6 +197,7 @@ Open: `chrome://inspect`
 ### Logs
 
 Logs are written to:
+
 - **Console**: Structured JSON in development
 - **File**: `logs/app.log` (if configured)
 
@@ -254,6 +259,7 @@ npm run db:migrate
 ### VS Code Extensions
 
 Recommended extensions (`.vscode/extensions.json`):
+
 - ESLint
 - Prettier
 - Volar (Vue)
@@ -276,22 +282,26 @@ Recommended extensions (`.vscode/extensions.json`):
 ## Environment-Specific Notes
 
 ### Development
+
 - Hot reload enabled
 - Verbose logging
 - Source maps enabled
 - Database seeded with test data
 
 ### Test
+
 - Separate test database
 - Faster execution (no watchers)
 - Coverage enabled
 
 ### Staging
+
 - Production-like environment
 - Real external services
 - Reduced logging
 
 ### Production
+
 - Optimized builds
 - Minimal logging
 - Error tracking enabled
