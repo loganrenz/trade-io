@@ -291,57 +291,6 @@ model TradingSession {
   @@index([isTradingDay])
 }
 
-model Quote {
-  id           String     @id @default(uuid()) @db.Uuid
-  instrumentId String     @db.Uuid
-  timestamp    DateTime
-  bid          Decimal?   @db.Decimal(20, 8)
-  ask          Decimal?   @db.Decimal(20, 8)
-  last         Decimal?   @db.Decimal(20, 8)
-  volume       BigInt?
-  createdAt    DateTime   @default(now())
-  
-  instrument   Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  
-  @@map("quotes")
-  @@index([instrumentId, timestamp(sort: Desc)])
-  @@index([timestamp(sort: Desc)])
-}
-
-model Bar {
-  id           String     @id @default(uuid()) @db.Uuid
-  instrumentId String     @db.Uuid
-  timeframe    String     @db.VarChar(10) // '1m', '5m', '1h', '1d'
-  timestamp    DateTime
-  open         Decimal    @db.Decimal(20, 8)
-  high         Decimal    @db.Decimal(20, 8)
-  low          Decimal    @db.Decimal(20, 8)
-  close        Decimal    @db.Decimal(20, 8)
-  volume       BigInt
-  createdAt    DateTime   @default(now())
-  
-  instrument   Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  
-  @@unique([instrumentId, timeframe, timestamp])
-  @@map("bars")
-  @@index([instrumentId, timeframe, timestamp(sort: Desc)])
-}
-
-model TradingSession {
-  id          String   @id @default(uuid()) @db.Uuid
-  exchange    String   @db.VarChar(20)
-  sessionType String   @db.VarChar(20) // 'REGULAR', 'PRE_MARKET', 'AFTER_HOURS'
-  openTime    DateTime @db.Time(6) // Time of day (use date part ignored)
-  closeTime   DateTime @db.Time(6)
-  daysOfWeek  Int[] // [1,2,3,4,5] for Mon-Fri
-  timezone    String   @default("America/New_York") @db.VarChar(50)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("trading_sessions")
-  @@index([exchange])
-}
-
 // ============================================================================
 // RISK & COMPLIANCE
 // ============================================================================

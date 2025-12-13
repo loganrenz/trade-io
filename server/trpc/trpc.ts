@@ -6,6 +6,11 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import { ZodError } from 'zod';
 import superjson from 'superjson';
 import type { Context } from './context';
+import {
+  requireAccountAccess,
+  requireOrderAccess,
+  requirePositionAccess,
+} from './middleware/authz';
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -45,6 +50,24 @@ const isAuthenticated = t.middleware(({ ctx, next }) => {
 });
 
 export const protectedProcedure = t.procedure.use(isAuthenticated);
+
+/**
+ * Account-protected procedure - requires authentication and account access
+ * Input must include accountId field
+ */
+export const accountProtectedProcedure = protectedProcedure.use(requireAccountAccess);
+
+/**
+ * Order-protected procedure - requires authentication and order access
+ * Input must include orderId field
+ */
+export const orderProtectedProcedure = protectedProcedure.use(requireOrderAccess);
+
+/**
+ * Position-protected procedure - requires authentication and position access
+ * Input must include positionId field
+ */
+export const positionProtectedProcedure = protectedProcedure.use(requirePositionAccess);
 
 /**
  * Router builder

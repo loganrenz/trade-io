@@ -188,9 +188,7 @@ describe('Market Data Schema Integration Tests', () => {
 
       expect(quotes.length).toBeGreaterThanOrEqual(2);
       // First quote should be most recent
-      expect(quotes[0].timestamp.getTime()).toBeGreaterThanOrEqual(
-        quotes[1].timestamp.getTime()
-      );
+      expect(quotes[0].timestamp.getTime()).toBeGreaterThanOrEqual(quotes[1].timestamp.getTime());
     });
 
     it('should cascade delete quotes when instrument is deleted', async () => {

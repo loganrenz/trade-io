@@ -2,7 +2,6 @@
  * Audit Logging Service
  * Production-grade audit trail for all state changes
  */
-import { z } from 'zod';
 import { db } from './db';
 import { logger } from './logger';
 import type { Prisma } from '@prisma/client';
@@ -182,15 +181,6 @@ export const AuditResource = {
   RISK_LIMIT: 'risk_limit',
   SYMBOL_RESTRICTION: 'symbol_restriction',
   SYSTEM: 'system',
-} as const;
-  TRADE_SETTLED: 'TRADE_SETTLED',
-  FEE_CHARGED: 'FEE_CHARGED',
-  ADJUSTMENT: 'ADJUSTMENT',
-
-  // Security actions
-  UNAUTHORIZED_ACCESS: 'UNAUTHORIZED_ACCESS',
-  PERMISSION_DENIED: 'PERMISSION_DENIED',
-  RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
 } as const;
 
 export type AuditActionType = (typeof AuditAction)[keyof typeof AuditAction];
@@ -420,13 +410,13 @@ export async function auditFromContext(
   metadata?: Record<string, unknown>
 ) {
   await auditService.log({
-    actor: context.userId,
+    actor: context.userId ?? undefined,
     action,
     resource,
-    resourceId,
-    metadata: metadata ?? null,
+    resourceId: resourceId ?? undefined,
+    metadata: metadata ?? undefined,
     requestId: context.requestId,
-    ipAddress: context.ipAddress ?? null,
-    userAgent: context.userAgent ?? null,
+    ipAddress: context.ipAddress ?? undefined,
+    userAgent: context.userAgent ?? undefined,
   });
 }
