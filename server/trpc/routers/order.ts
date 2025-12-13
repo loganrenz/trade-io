@@ -3,7 +3,7 @@
  * tRPC routes for order management
  */
 import { z } from 'zod';
-import { router, protectedProcedure, accountProtectedProcedure } from '../trpc';
+import { router, accountProtectedProcedure } from '../trpc';
 import { placeOrder } from '../../lib/order-service';
 import { placeOrderSchema, uuidSchema } from '../../lib/schemas';
 import { TRPCError } from '@trpc/server';
@@ -14,15 +14,12 @@ export const orderRouter = router({
   /**
    * Place a new order
    */
-  place: protectedProcedure
+  place: accountProtectedProcedure
     .input(placeOrderSchema)
     .mutation(async ({ input, ctx }) => {
       try {
-        // Generate idempotency key from request or use client-provided one
-        const idempotencyKey = crypto.randomUUID();
-
-        // Validate user has access to the account (will throw if not)
-        // This is already handled by authorization middleware in the calling code
+        // Use client-provided idempotency key or generate one
+        const idempotencyKey = input.idempotencyKey || crypto.randomUUID();
 
         const result = await placeOrder(
           {

@@ -467,40 +467,34 @@ async function calculateBuyingPower(accountId: string): Promise<Decimal> {
   // Start with initial cash
   let cashBalance = new Decimal(account.initialCash.toString());
 
-  // Subtract all buy executions
-  const buyExecutions = await db.execution.findMany({
+  // Get all executions for this account in a single query
+  const executions = await db.execution.findMany({
     where: {
-      orderId: {
-        in: (await db.order.findMany({
-          where: { accountId },
-          select: { id: true },
-        })).map(o => o.id),
+      order: {
+        accountId,
       },
-      side: 'BUY',
+    },
+    select: {
+      side: true,
+      quantity: true,
+      price: true,
+      commission: true,
     },
   });
 
-  for (const exec of buyExecutions) {
-    const cost = new Decimal(exec.price.toString()).times(exec.quantity).plus(exec.commission.toString());
-    cashBalance = cashBalance.minus(cost);
-  }
-
-  // Add all sell executions
-  const sellExecutions = await db.execution.findMany({
-    where: {
-      orderId: {
-        in: (await db.order.findMany({
-          where: { accountId },
-          select: { id: true },
-        })).map(o => o.id),
-      },
-      side: 'SELL',
-    },
-  });
-
-  for (const exec of sellExecutions) {
-    const proceeds = new Decimal(exec.price.toString()).times(exec.quantity).minus(exec.commission.toString());
-    cashBalance = cashBalance.plus(proceeds);
+  // Calculate net cash from all executions
+  for (const exec of executions) {
+    const amount = new Decimal(exec.price.toString()).times(exec.quantity);
+    
+    if (exec.side === 'BUY') {
+      // Buying reduces cash (cost + commission)
+      const cost = amount.plus(exec.commission.toString());
+      cashBalance = cashBalance.minus(cost);
+    } else {
+      // Selling increases cash (proceeds - commission)
+      const proceeds = amount.minus(exec.commission.toString());
+      cashBalance = cashBalance.plus(proceeds);
+    }
   }
 
   return cashBalance;
