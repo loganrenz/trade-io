@@ -5,13 +5,15 @@
 import { router } from '../trpc';
 import { healthRouter } from './health';
 import { auditRouter } from './audit';
+import { userRouter } from './user';
+import { accountRouter } from './account';
 
 export const appRouter = router({
   health: healthRouter,
   audit: auditRouter,
+  user: userRouter,
+  account: accountRouter,
   // Additional routers will be added here as features are implemented
-  // users: usersRouter,
-  // accounts: accountsRouter,
   // orders: ordersRouter,
   // positions: positionsRouter,
   // marketData: marketDataRouter,
