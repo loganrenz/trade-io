@@ -2,7 +2,7 @@
  * Order Router
  * tRPC router for order management operations
  */
-import { router, accountProtectedProcedure, orderProtectedProcedure } from '../trpc';
+import { router, protectedProcedure, accountProtectedProcedure, orderProtectedProcedure } from '../trpc';
 import { z } from 'zod';
 import * as orderService from '../../lib/order-service';
 import {
@@ -18,7 +18,7 @@ export const orderRouter = router({
   /**
    * Place a new order
    */
-  place: accountProtectedProcedure
+  place: protectedProcedure
     .input(
       placeOrderSchema.extend({
         idempotencyKey: z.string().optional(),
