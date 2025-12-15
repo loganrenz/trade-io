@@ -3,6 +3,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { db } from '../../server/lib/db';
+import { logger } from '../../server/lib/logger';
 import { appRouter } from '../../server/trpc/routers/_app';
 import type { Context } from '../../server/trpc/context';
 
@@ -62,6 +63,7 @@ describe('Order API', () => {
       data: {
         instrumentId: testInstrument.id,
         exchange: 'NASDAQ',
+        date: new Date('2024-01-01'),
         sessionType: 'REGULAR',
         openTime: new Date('2024-01-01T09:30:00'),
         closeTime: new Date('2024-01-01T16:00:00'),
@@ -69,12 +71,15 @@ describe('Order API', () => {
     });
 
     // Create tRPC caller with test context
-    const ctx: Context = {
+    const ctx: Partial<Context> = {
       userId: testUser.id,
-      user: testUser,
       requestId: 'test-request-id',
+      ipAddress: '127.0.0.1',
+      userAgent: 'test',
+      logger: logger.child({ requestId: 'test-request-id' }),
+      db,
     };
-    caller = appRouter.createCaller(ctx);
+    caller = appRouter.createCaller(ctx as Context);
   });
 
   afterEach(async () => {
