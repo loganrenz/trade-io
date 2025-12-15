@@ -63,6 +63,7 @@ export const placeOrderSchema = z.object({
   limitPrice: z.number().positive().optional(),
   stopPrice: z.number().positive().optional(),
   timeInForce: timeInForceSchema.default('DAY'),
+  idempotencyKey: z.string().optional(), // Client-provided idempotency key
 });
 
 /**
