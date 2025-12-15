@@ -122,8 +122,8 @@ export const orderRouter = router({
           accountId: input.accountId,
           status: input.status,
           symbol: input.symbol,
-          page: input.page,
-          perPage: input.perPage,
+          page: Math.floor(input.offset / input.limit) + 1,
+          perPage: input.limit,
         });
         return orders;
       } catch (error) {
