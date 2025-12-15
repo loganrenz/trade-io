@@ -12,6 +12,8 @@ import { quoteRouter } from './quote';
 import { barRouter } from './bar';
 import { orderRouter } from './order';
 import { positionRouter } from './position';
+import { portfolioRouter } from './portfolio';
+import { transactionRouter } from './transaction';
 
 export const appRouter = router({
   health: healthRouter,
@@ -23,6 +25,8 @@ export const appRouter = router({
   bar: barRouter,
   order: orderRouter,
   position: positionRouter,
+  portfolio: portfolioRouter,
+  transaction: transactionRouter,
 });
 
 export type AppRouter = typeof appRouter;
