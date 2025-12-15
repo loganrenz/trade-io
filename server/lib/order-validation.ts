@@ -3,8 +3,8 @@
  * Validates orders for symbol validity, quantity, buying power, and business rules
  */
 import { db } from './db';
-import { pricing } from './pricing';
-import { tradingHours } from './trading-hours';
+import { getCurrentPrice } from './pricing';
+import { isExchangeOpen, getNextMarketOpen } from './trading-hours';
 import {
   ValidationError,
   InvalidOrderError,
@@ -135,10 +135,19 @@ export function validatePriceParameters(
  * Validate market is open for trading
  */
 export async function validateMarketHours(symbol: string): Promise<void> {
-  const isOpen = await tradingHours.isMarketOpen(symbol);
+  // Get instrument to find exchange
+  const instrument = await db.instrument.findUnique({
+    where: { symbol },
+  });
+
+  if (!instrument) {
+    throw new InvalidSymbolError(`Symbol ${symbol} not found`);
+  }
+
+  const isOpen = await isExchangeOpen(instrument.exchange);
 
   if (!isOpen) {
-    const nextOpen = await tradingHours.getNextMarketOpen(symbol);
+    const nextOpen = await getNextMarketOpen(instrument.exchange);
     throw new MarketClosedError(
       `Market is closed for ${symbol}. Next open: ${nextOpen?.toISOString()}`
     );
@@ -220,7 +229,10 @@ export async function estimateOrderCost(params: {
     estimatedPrice = params.limitPrice;
   } else {
     // Get current market price for MARKET orders
-    const currentPrice = await pricing.getCurrentPrice(params.symbol);
+    const currentPrice = await getCurrentPrice(params.symbol);
+    if (!currentPrice) {
+      throw new InvalidSymbolError(`No price available for ${params.symbol}`);
+    }
     estimatedPrice = currentPrice;
   }
 
