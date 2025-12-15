@@ -10,9 +10,9 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     env: {
       DATABASE_URL:
-        process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/tradeio_dev',
+        process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/tradeio?schema=public',
       DIRECT_URL:
-        process.env.DIRECT_URL || 'postgresql://postgres:postgres@localhost:5432/tradeio_dev',
+        process.env.DIRECT_URL || 'postgresql://postgres:postgres@localhost:5432/tradeio?schema=public',
     },
     coverage: {
       provider: 'v8',

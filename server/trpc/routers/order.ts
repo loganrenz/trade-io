@@ -2,7 +2,7 @@
  * Order Router
  * tRPC router for order management operations
  */
-import { router, protectedProcedure, accountProtectedProcedure, orderProtectedProcedure } from '../trpc';
+import { router, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import * as orderService from '../../lib/order-service';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../../lib/schemas';
 import { toTRPCError } from '../../lib/error-formatting';
 import { randomUUID } from 'node:crypto';
+import { checkAccountAccess, checkOrderAccess } from '../../lib/authz';
 
 export const orderRouter = router({
   /**
@@ -50,7 +51,7 @@ export const orderRouter = router({
   /**
    * Modify an existing order
    */
-  modify: orderProtectedProcedure
+  modify: protectedProcedure
     .input(
       z.object({
         orderId: uuidSchema,
@@ -61,6 +62,8 @@ export const orderRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
+        // Check authorization
+        await checkOrderAccess(ctx.userId!, input.orderId);
         const order = await orderService.modifyOrder(
           input.orderId,
           {
@@ -68,7 +71,7 @@ export const orderRouter = router({
             limitPrice: input.limitPrice,
             stopPrice: input.stopPrice,
           },
-          ctx.userId
+          ctx.userId!
         );
         return order;
       } catch (error) {
@@ -79,14 +82,16 @@ export const orderRouter = router({
   /**
    * Cancel an order
    */
-  cancel: orderProtectedProcedure
+  cancel: protectedProcedure
     .input(z.object({ 
       orderId: uuidSchema,
       reason: z.string().max(200).optional(), // Optional reason for cancellation
     }))
     .mutation(async ({ input, ctx }) => {
       try {
-        const order = await orderService.cancelOrder(input.orderId, ctx.userId);
+        // Check authorization
+        await checkOrderAccess(ctx.userId!, input.orderId);
+        const order = await orderService.cancelOrder(input.orderId, ctx.userId!);
         return order;
       } catch (error) {
         throw toTRPCError(error);
@@ -96,10 +101,12 @@ export const orderRouter = router({
   /**
    * Get a single order by ID
    */
-  get: orderProtectedProcedure
+  get: protectedProcedure
     .input(z.object({ orderId: uuidSchema }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
+        // Check authorization
+        await checkOrderAccess(ctx.userId!, input.orderId);
         const order = await orderService.getOrder(input.orderId);
         return order;
       } catch (error) {
@@ -110,7 +117,7 @@ export const orderRouter = router({
   /**
    * List orders for an account
    */
-  list: accountProtectedProcedure
+  list: protectedProcedure
     .input(
       z.object({
         accountId: uuidSchema,
@@ -119,8 +126,10 @@ export const orderRouter = router({
         ...paginationSchema.shape,
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
+        // Check authorization
+        await checkAccountAccess(ctx.userId!, input.accountId);
         const orders = await orderService.getOrders({
           accountId: input.accountId,
           status: input.status,
@@ -137,10 +146,12 @@ export const orderRouter = router({
   /**
    * Get order history (events)
    */
-  history: orderProtectedProcedure
+  history: protectedProcedure
     .input(z.object({ orderId: uuidSchema }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
+        // Check authorization
+        await checkOrderAccess(ctx.userId!, input.orderId);
         const events = await orderService.getOrderHistory(input.orderId);
         return events;
       } catch (error) {
