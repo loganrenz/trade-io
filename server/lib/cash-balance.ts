@@ -121,9 +121,7 @@ export interface AccountBalanceSummary {
   reservedCash: string;
 }
 
-export async function getAccountBalanceSummary(
-  accountId: string
-): Promise<AccountBalanceSummary> {
+export async function getAccountBalanceSummary(accountId: string): Promise<AccountBalanceSummary> {
   const [cashBalance, securitiesValue, buyingPower, availableCash] = await Promise.all([
     getCashBalance(accountId),
     getSecuritiesValue(accountId),
