@@ -11,6 +11,7 @@ import { instrumentRouter } from './instrument';
 import { quoteRouter } from './quote';
 import { barRouter } from './bar';
 import { orderRouter } from './order';
+import { positionRouter } from './position';
 
 export const appRouter = router({
   health: healthRouter,
@@ -21,8 +22,7 @@ export const appRouter = router({
   quote: quoteRouter,
   bar: barRouter,
   order: orderRouter,
-  // Additional routers will be added here as features are implemented
-  // positions: positionsRouter,
+  position: positionRouter,
 });
 
 export type AppRouter = typeof appRouter;
