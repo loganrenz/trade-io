@@ -4,6 +4,7 @@
  */
 import type { H3Event } from 'h3';
 import { logger } from '../lib/logger';
+import { db } from '../lib/db';
 
 export async function createContext(event: H3Event) {
   const requestId = crypto.randomUUID();
@@ -19,6 +20,7 @@ export async function createContext(event: H3Event) {
     ipAddress,
     userAgent,
     logger: logger.child({ requestId }),
+    db, // Add database client to context
   };
 }
 
