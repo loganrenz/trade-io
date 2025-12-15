@@ -18,6 +18,7 @@ The authorization service provides functions to check resource access:
 ### Core Functions
 
 #### `checkAccountAccess(userId, accountId)`
+
 Verifies a user has access to an account. Throws `ForbiddenError` or `NotFoundError`.
 
 ```typescript
@@ -26,6 +27,7 @@ await checkAccountAccess(userId, accountId);
 ```
 
 #### `isAccountOwner(userId, accountId)`
+
 Returns boolean indicating if user owns the account (non-throwing version).
 
 ```typescript
@@ -35,6 +37,7 @@ if (await isAccountOwner(userId, accountId)) {
 ```
 
 #### `getUserAccountIds(userId)`
+
 Returns array of all account IDs a user has access to.
 
 ```typescript
@@ -43,14 +46,17 @@ const accountIds = await getUserAccountIds(userId);
 ```
 
 #### `checkOrderAccess(userId, orderId)`
+
 Verifies user owns the account associated with an order.
 
 #### `checkPositionAccess(userId, positionId)`
+
 Verifies user owns the account associated with a position.
 
 ### Query Filter Helpers
 
 #### `accountOwnerFilter(userId)`
+
 Returns a Prisma where clause for filtering account-related resources:
 
 ```typescript
@@ -61,6 +67,7 @@ const orders = await db.order.findMany({
 ```
 
 #### `userAccountsFilter(userId)`
+
 Returns a Prisma where clause for filtering user's accounts:
 
 ```typescript
@@ -76,6 +83,7 @@ Pre-configured procedures that automatically verify access:
 ### Available Procedures
 
 #### `accountProtectedProcedure`
+
 Requires authentication and verifies `accountId` in input:
 
 ```typescript
@@ -90,6 +98,7 @@ export const myRouter = router({
 ```
 
 #### `orderProtectedProcedure`
+
 Requires authentication and verifies `orderId` in input:
 
 ```typescript
@@ -104,6 +113,7 @@ export const myRouter = router({
 ```
 
 #### `positionProtectedProcedure`
+
 Requires authentication and verifies `positionId` in input:
 
 ```typescript
@@ -165,6 +175,7 @@ The authorization system includes comprehensive tests:
 - **Integration tests** (`tests/integration/authz-middleware.test.ts`) - Tests tRPC middleware integration
 
 Run tests with:
+
 ```bash
 npm run test:unit -- tests/unit/authz.test.ts
 npm run test:integration -- tests/integration/authz-middleware.test.ts

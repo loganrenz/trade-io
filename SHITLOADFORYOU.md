@@ -33,7 +33,7 @@ These are the critical trading features needed for the platform to function:
   - Quantity changes
   - Maintain audit trail
 
-- [x] **#0040 - Order Cancellation API** ✅ 
+- [x] **#0040 - Order Cancellation API** ✅
   - Cancel pending orders
   - Handle partial fills
   - Update positions
@@ -244,12 +244,14 @@ Production readiness and security:
 **Completed So Far**: 38/70 issues (54.3%)
 
 **Phases Complete**:
+
 - ✅ Phase 0: Repository Baseline & Tooling (8/8 - 100%)
 - ✅ Phase 1: Data Model & Audit Foundation (8/8 - 100%)
 - ✅ Phase 2: Core APIs & Authorization (12/12 - 100%)
 - ✅ Phase 3: Market Data & Pricing (8/8 - 100%)
 
 **Phases Remaining**:
+
 - ⏳ Phase 4: Order Lifecycle & Execution (0/10 - 0%)
 - ⏳ Phase 5: Portfolio & Ledger & PnL (0/8 - 0%)
 - ⏳ Phase 6: Admin & Observability (0/8 - 0%)
@@ -304,10 +306,12 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 ## 📋 Your Task List (5 Issues)
 
 ### Issue #0042: Execution Simulator Core ✅
+
 **Complexity**: Large (L) - ~60k tokens
 **File**: `docs/issues/0042-execution-simulator.md`
 
 **What to Build**:
+
 - Create `server/lib/execution-simulator.ts` - Paper trading execution engine
 - Implement market order instant execution
 - Implement limit order matching logic
@@ -316,6 +320,7 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 - Comprehensive unit tests
 
 **Key Functions**:
+
 - `executeMarketOrder(order)` - Instant fill at current price
 - `executeLimitOrder(order, currentPrice)` - Conditional matching
 - `createExecution(order, fillPrice, fillQty)` - Record execution
@@ -326,10 +331,12 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 ---
 
 ### Issue #0043: Partial Fill Support ✅
+
 **Complexity**: Medium (M) - ~35k tokens
 **File**: `docs/issues/0043-partial-fills.md`
 
 **What to Build**:
+
 - Extend execution simulator for partial fills
 - Add `fillQuantity` tracking vs `orderQuantity`
 - Handle PARTIAL order status
@@ -337,6 +344,7 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 - Tests for partial fill scenarios
 
 **Key Features**:
+
 - Multiple execution records for single order
 - Cumulative fill quantity tracking
 - Order status transitions (ACCEPTED → PARTIAL → FILLED)
@@ -347,10 +355,12 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 ---
 
 ### Issue #0044: Time-in-Force Handling ✅
+
 **Complexity**: Medium (M) - ~35k tokens
 **File**: `docs/issues/0044-time-in-force.md`
 
 **What to Build**:
+
 - Implement DAY (expire at market close)
 - Implement GTC (Good 'Til Cancelled)
 - Implement IOC (Immediate or Cancel)
@@ -358,6 +368,7 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 - Expiration logic and cleanup job
 
 **Key Components**:
+
 - `checkTimeInForce(order)` - Validation logic
 - `expireOrders()` - Batch expiration job
 - `handleIOC(order)` - Immediate or cancel logic
@@ -368,10 +379,12 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 ---
 
 ### Issue #0045: Slippage Simulation ✅
+
 **Complexity**: Medium (M) - ~35k tokens
 **File**: `docs/issues/0045-slippage-simulation.md`
 
 **What to Build**:
+
 - Add realistic slippage to execution simulator
 - Bid/ask spread simulation
 - Volume-based slippage
@@ -379,6 +392,7 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 - Market impact modeling
 
 **Key Features**:
+
 - `calculateSlippage(order, marketPrice)` - Slippage calculation
 - Spread-based slippage for small orders
 - Volume impact for large orders
@@ -390,10 +404,12 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 ---
 
 ### Issue #0046: Order Event System ✅
+
 **Complexity**: Medium (M) - ~35k tokens
 **File**: `docs/issues/0046-order-events.md`
 
 **What to Build**:
+
 - Create `OrderEvent` logging system
 - Track all order state transitions
 - Event types: PLACED, ACCEPTED, PARTIAL_FILL, FILLED, CANCELLED, REJECTED, EXPIRED
@@ -401,6 +417,7 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 - Real-time event streaming (optional)
 
 **Key Components**:
+
 - `server/lib/order-events.ts` - Event creation and queries
 - Event creation on every order status change
 - Order audit trail endpoint
@@ -413,7 +430,9 @@ Complete the second half of Phase 4 (Order Lifecycle & Execution) while the prim
 ## 🔧 Technical Guidance
 
 ### File Structure
+
 Create these files:
+
 ```
 server/
   lib/
@@ -447,10 +466,10 @@ export class ExecutionSimulator {
   async executeMarketOrder(orderId: string) {
     const order = await db.order.findUnique({ where: { id: orderId } });
     const currentPrice = await pricing.getCurrentPrice(order.symbol);
-    
+
     // Apply slippage
     const fillPrice = this.applySlippage(order, currentPrice);
-    
+
     // Create execution
     const execution = await db.execution.create({
       data: {
@@ -463,26 +482,26 @@ export class ExecutionSimulator {
         executedAt: new Date(),
       },
     });
-    
+
     // Update order status
     await db.order.update({
       where: { id: orderId },
       data: { status: 'FILLED' },
     });
-    
+
     // Audit log
     await audit({ action: 'ORDER_FILLED', resourceId: orderId });
-    
+
     return execution;
   }
-  
+
   /**
    * Execute limit order if price is favorable
    */
   async executeLimitOrder(orderId: string) {
     // Implementation for #0042
   }
-  
+
   /**
    * Apply slippage to execution price
    */
@@ -601,12 +620,14 @@ Update `PROGRESS.md` after completing each issue:
    - Next steps
 
 **Example Work Log Entry**:
+
 ```markdown
 ### 2025-12-13 23:00 UTC - Agent 8 (Phase 4B - Execution)
 
 **Action**: Completed Issues #0042-#0046 (Execution & Events)
 
 **Issues Completed**:
+
 - #0042 - Execution Simulator Core ✅
 - #0043 - Partial Fill Support ✅
 - #0044 - Time-in-Force Handling ✅
@@ -614,6 +635,7 @@ Update `PROGRESS.md` after completing each issue:
 - #0046 - Order Event System ✅
 
 **Files Created**:
+
 - server/lib/execution-simulator.ts
 - server/lib/execution-partial.ts
 - server/lib/time-in-force.ts
@@ -634,17 +656,20 @@ Update `PROGRESS.md` after completing each issue:
 ## 🚀 Branch Strategy
 
 Create a new branch for your work:
+
 ```bash
 git checkout -b copilot/phase-4b-execution-events
 ```
 
 Commit frequently:
+
 ```bash
 git add .
 git commit -m "feat(execution): implement market order execution - Refs #0042"
 ```
 
 Push when ready:
+
 ```bash
 git push origin copilot/phase-4b-execution-events
 ```
@@ -654,6 +679,7 @@ git push origin copilot/phase-4b-execution-events
 ## 🤝 Coordination with Primary Agent
 
 The primary agent is working on:
+
 - #0037 - Order Placement API
 - #0038 - Order Validation Service
 - #0039 - Order Modification API
@@ -663,6 +689,7 @@ The primary agent is working on:
 You depend on their work being complete before starting #0042.
 
 **Timeline**:
+
 1. Wait for primary agent to complete #0037-#0041 (~2-3 hours)
 2. Pull their branch and merge to your branch
 3. Start implementing your issues
@@ -673,6 +700,7 @@ You depend on their work being complete before starting #0042.
 ## 📚 Key Documentation
 
 Before starting, read:
+
 - `AGENTS.md` - Agent workflow guide
 - `PROGRESS.md` - Current project status
 - `.github/copilot-instructions.md` - Coding standards
@@ -726,6 +754,7 @@ You've succeeded when:
 ## 🆘 Need Help?
 
 If blocked:
+
 1. Check existing code patterns in `server/lib/`
 2. Read Prisma docs for complex queries
 3. Review test files for testing patterns

@@ -5,6 +5,8 @@
 import { db } from './db';
 import { logger } from './logger';
 import { getCurrentPrice, getSpread } from './pricing';
+import { recordTransaction, type LedgerTransaction } from './ledger-service';
+import Decimal from 'decimal.js';
 
 /**
  * Simulated slippage percentage for market orders
@@ -305,7 +307,15 @@ async function updatePosition(params: {
 }
 
 /**
- * Create ledger entries for trade execution
+ * Create ledger entries for trade execution using double-entry bookkeeping
+ *
+ * For a BUY trade:
+ * - DEBIT: Securities (increase asset)
+ * - CREDIT: Cash (decrease asset)
+ *
+ * For a SELL trade:
+ * - DEBIT: Cash (increase asset)
+ * - CREDIT: Securities (decrease asset)
  */
 async function createLedgerEntries(params: {
   accountId: string;
@@ -318,33 +328,53 @@ async function createLedgerEntries(params: {
 }): Promise<void> {
   const { accountId, symbol, side, quantity, price, executionId } = params;
 
-  const tradeValue = quantity * price;
+  const tradeValue = new Decimal(quantity).times(new Decimal(price));
 
-  // Get current cash balance
-  const lastEntry = await db.ledgerEntry.findFirst({
-    where: { accountId },
-    orderBy: { createdAt: 'desc' },
-  });
+  // Build double-entry transaction
+  const transaction: LedgerTransaction = {
+    accountId,
+    description: `${side} ${quantity} ${symbol} @ $${new Decimal(price).toFixed(2)}`,
+    referenceType: 'EXECUTION',
+    referenceId: executionId,
+    entries: [],
+  };
 
-  const currentBalance = lastEntry ? Number(lastEntry.balanceAfter) : 0;
+  if (side === 'BUY') {
+    // Buying: Securities increase (DEBIT), Cash decreases (CREDIT)
+    transaction.entries = [
+      {
+        ledgerAccountSubtype: 'SECURITIES',
+        entryType: 'DEBIT',
+        amount: tradeValue.toString(),
+        metadata: { symbol, quantity, price },
+      },
+      {
+        ledgerAccountSubtype: 'CASH',
+        entryType: 'CREDIT',
+        amount: tradeValue.toString(),
+        metadata: { symbol, quantity, price },
+      },
+    ];
+  } else {
+    // Selling: Cash increases (DEBIT), Securities decrease (CREDIT)
+    transaction.entries = [
+      {
+        ledgerAccountSubtype: 'CASH',
+        entryType: 'DEBIT',
+        amount: tradeValue.toString(),
+        metadata: { symbol, quantity, price },
+      },
+      {
+        ledgerAccountSubtype: 'SECURITIES',
+        entryType: 'CREDIT',
+        amount: tradeValue.toString(),
+        metadata: { symbol, quantity, price },
+      },
+    ];
+  }
 
-  // Calculate new balance based on trade
-  const cashChange = side === 'BUY' ? -tradeValue : tradeValue;
-  const newBalance = currentBalance + cashChange;
-
-  // Create ledger entry
-  await db.ledgerEntry.create({
-    data: {
-      accountId,
-      entryType: 'TRADE',
-      symbol,
-      quantity: side === 'BUY' ? quantity : -quantity,
-      cashAmount: cashChange,
-      balanceAfter: newBalance,
-      description: `${side} ${quantity} ${symbol} @ $${price.toFixed(2)}`,
-      referenceId: executionId,
-    },
-  });
+  // Record the transaction
+  await recordTransaction(transaction);
 
   logger.info(
     {
@@ -353,9 +383,8 @@ async function createLedgerEntries(params: {
       side,
       quantity,
       price,
-      cashChange,
-      newBalance,
+      tradeValue: tradeValue.toString(),
     },
-    'Ledger entry created for trade'
+    'Ledger entries created for trade execution'
   );
 }
