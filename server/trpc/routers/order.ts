@@ -130,14 +130,24 @@ export const orderRouter = router({
       try {
         // Check authorization
         await checkAccountAccess(ctx.userId!, input.accountId);
-        const orders = await orderService.getOrders({
+        const result = await orderService.getOrders({
           accountId: input.accountId,
-          status: input.status,
+          status: input.status ? [input.status] : undefined,
           symbol: input.symbol,
-          page: Math.floor(input.offset / input.limit) + 1,
-          perPage: input.limit,
+          limit: input.limit,
+          offset: input.offset,
         });
-        return orders;
+        
+        // Reformat to match expected response shape
+        return {
+          orders: result.orders,
+          pagination: {
+            total: result.total,
+            limit: result.limit,
+            offset: result.offset,
+            hasMore: result.offset + result.orders.length < result.total,
+          },
+        };
       } catch (error) {
         throw toTRPCError(error);
       }

@@ -286,6 +286,7 @@ export async function getOrder(orderId: string): Promise<unknown> {
   const order = await db.order.findUnique({
     where: { id: orderId },
     include: {
+      account: true,
       executions: {
         orderBy: { executedAt: 'desc' },
       },
