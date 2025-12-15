@@ -83,10 +83,12 @@ export const orderRouter = router({
    * Cancel an order
    */
   cancel: protectedProcedure
-    .input(z.object({ 
-      orderId: uuidSchema,
-      reason: z.string().max(200).optional(), // Optional reason for cancellation
-    }))
+    .input(
+      z.object({
+        orderId: uuidSchema,
+        reason: z.string().max(200).optional(), // Optional reason for cancellation
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       try {
         // Check authorization
@@ -101,18 +103,16 @@ export const orderRouter = router({
   /**
    * Get a single order by ID
    */
-  get: protectedProcedure
-    .input(z.object({ orderId: uuidSchema }))
-    .query(async ({ input, ctx }) => {
-      try {
-        // Check authorization
-        await checkOrderAccess(ctx.userId!, input.orderId);
-        const order = await orderService.getOrder(input.orderId);
-        return order;
-      } catch (error) {
-        throw toTRPCError(error);
-      }
-    }),
+  get: protectedProcedure.input(z.object({ orderId: uuidSchema })).query(async ({ input, ctx }) => {
+    try {
+      // Check authorization
+      await checkOrderAccess(ctx.userId!, input.orderId);
+      const order = await orderService.getOrder(input.orderId);
+      return order;
+    } catch (error) {
+      throw toTRPCError(error);
+    }
+  }),
 
   /**
    * List orders for an account
@@ -137,7 +137,7 @@ export const orderRouter = router({
           limit: input.limit,
           offset: input.offset,
         });
-        
+
         // Reformat to match expected response shape
         return {
           orders: result.orders,
