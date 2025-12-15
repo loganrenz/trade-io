@@ -80,7 +80,10 @@ export const orderRouter = router({
    * Cancel an order
    */
   cancel: orderProtectedProcedure
-    .input(z.object({ orderId: uuidSchema }))
+    .input(z.object({ 
+      orderId: uuidSchema,
+      reason: z.string().max(200).optional(), // Optional reason for cancellation
+    }))
     .mutation(async ({ input, ctx }) => {
       try {
         const order = await orderService.cancelOrder(input.orderId, ctx.userId);
@@ -93,7 +96,7 @@ export const orderRouter = router({
   /**
    * Get a single order by ID
    */
-  getById: orderProtectedProcedure
+  get: orderProtectedProcedure
     .input(z.object({ orderId: uuidSchema }))
     .query(async ({ input }) => {
       try {
@@ -134,7 +137,7 @@ export const orderRouter = router({
   /**
    * Get order history (events)
    */
-  getHistory: orderProtectedProcedure
+  history: orderProtectedProcedure
     .input(z.object({ orderId: uuidSchema }))
     .query(async ({ input }) => {
       try {
