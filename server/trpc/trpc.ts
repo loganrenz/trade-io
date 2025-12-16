@@ -6,7 +6,12 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import { ZodError } from 'zod';
 import superjson from 'superjson';
 import type { Context } from './context';
-import { checkAccountAccess, checkOrderAccess, checkPositionAccess } from '~/server/lib/authz';
+import {
+  checkAccountAccess,
+  checkOrderAccess,
+  checkPositionAccess,
+  checkAdminAccess,
+} from '~/server/lib/authz';
 import { ForbiddenError, NotFoundError } from '~/server/errors';
 
 const t = initTRPC.context<Context>().create({
@@ -201,3 +206,39 @@ export const orderProtectedProcedure = protectedProcedure.use(requireOrderAccess
  * Position-protected procedure - requires authentication and position access
  */
 export const positionProtectedProcedure = protectedProcedure.use(requirePositionAccess);
+
+/**
+ * Middleware to check admin access
+ */
+const requireAdminAccess = middleware(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'You must be logged in to access this resource',
+    });
+  }
+
+  try {
+    await checkAdminAccess(ctx.userId);
+    return next();
+  } catch (error) {
+    if (error instanceof ForbiddenError) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: error.message,
+      });
+    }
+    if (error instanceof NotFoundError) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: error.message,
+      });
+    }
+    throw error;
+  }
+});
+
+/**
+ * Admin-protected procedure - requires authentication and admin role
+ */
+export const adminProtectedProcedure = protectedProcedure.use(requireAdminAccess);

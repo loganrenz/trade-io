@@ -11,6 +11,12 @@ import {
   checkPositionAccess,
   accountOwnerFilter,
   userAccountsFilter,
+  checkAdminAccess,
+  isAdmin,
+  getUserRole,
+  checkAdminPermission,
+  UserRole,
+  ADMIN_PERMISSIONS,
 } from '~/server/lib/authz';
 import { ForbiddenError, NotFoundError } from '~/server/errors';
 
@@ -312,6 +318,144 @@ describe('Authorization Service', () => {
       const accountIds = user1Accounts.map((a: { id: string }) => a.id);
       expect(accountIds).toContain(testAccountId);
       expect(accountIds).toContain(account2.id);
+    });
+  });
+
+  describe('Admin Authorization', () => {
+    let adminUserId: string;
+    let regularUserId: string;
+
+    beforeEach(async () => {
+      // Create admin user
+      const adminUser = await db.user.create({
+        data: {
+          email: `admin-${Date.now()}@example.com`,
+          emailVerified: true,
+          role: UserRole.ADMIN,
+          provider: 'test',
+          providerUserId: `test-admin-${Date.now()}`,
+        },
+      });
+      adminUserId = adminUser.id;
+
+      // Create regular user
+      const regularUser = await db.user.create({
+        data: {
+          email: `regular-${Date.now()}@example.com`,
+          emailVerified: true,
+          role: UserRole.USER,
+          provider: 'test',
+          providerUserId: `test-regular-${Date.now()}`,
+        },
+      });
+      regularUserId = regularUser.id;
+    });
+
+    describe('checkAdminAccess', () => {
+      it('should allow access for admin user', async () => {
+        await expect(checkAdminAccess(adminUserId)).resolves.toBeUndefined();
+      });
+
+      it('should throw ForbiddenError for regular user', async () => {
+        await expect(checkAdminAccess(regularUserId)).rejects.toThrow(ForbiddenError);
+      });
+
+      it('should throw NotFoundError for non-existent user', async () => {
+        const fakeUserId = '00000000-0000-0000-0000-000000000000';
+        await expect(checkAdminAccess(fakeUserId)).rejects.toThrow(NotFoundError);
+      });
+
+      it('should throw ForbiddenError for soft-deleted admin user', async () => {
+        await db.user.update({
+          where: { id: adminUserId },
+          data: { deletedAt: new Date() },
+        });
+
+        await expect(checkAdminAccess(adminUserId)).rejects.toThrow(NotFoundError);
+      });
+    });
+
+    describe('isAdmin', () => {
+      it('should return true for admin user', async () => {
+        const result = await isAdmin(adminUserId);
+        expect(result).toBe(true);
+      });
+
+      it('should return false for regular user', async () => {
+        const result = await isAdmin(regularUserId);
+        expect(result).toBe(false);
+      });
+
+      it('should return false for non-existent user', async () => {
+        const fakeUserId = '00000000-0000-0000-0000-000000000000';
+        const result = await isAdmin(fakeUserId);
+        expect(result).toBe(false);
+      });
+
+      it('should return false for soft-deleted admin', async () => {
+        await db.user.update({
+          where: { id: adminUserId },
+          data: { deletedAt: new Date() },
+        });
+
+        const result = await isAdmin(adminUserId);
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('getUserRole', () => {
+      it('should return ADMIN role for admin user', async () => {
+        const role = await getUserRole(adminUserId);
+        expect(role).toBe(UserRole.ADMIN);
+      });
+
+      it('should return USER role for regular user', async () => {
+        const role = await getUserRole(regularUserId);
+        expect(role).toBe(UserRole.USER);
+      });
+
+      it('should throw NotFoundError for non-existent user', async () => {
+        const fakeUserId = '00000000-0000-0000-0000-000000000000';
+        await expect(getUserRole(fakeUserId)).rejects.toThrow(NotFoundError);
+      });
+
+      it('should throw NotFoundError for soft-deleted user', async () => {
+        await db.user.update({
+          where: { id: regularUserId },
+          data: { deletedAt: new Date() },
+        });
+
+        await expect(getUserRole(regularUserId)).rejects.toThrow(NotFoundError);
+      });
+    });
+
+    describe('checkAdminPermission', () => {
+      it('should allow admin to check any permission', async () => {
+        await expect(
+          checkAdminPermission(adminUserId, ADMIN_PERMISSIONS.MANAGE_USERS)
+        ).resolves.toBeUndefined();
+
+        await expect(
+          checkAdminPermission(adminUserId, ADMIN_PERMISSIONS.MANAGE_RISK_LIMITS)
+        ).resolves.toBeUndefined();
+
+        await expect(
+          checkAdminPermission(adminUserId, ADMIN_PERMISSIONS.VIEW_AUDIT_LOGS)
+        ).resolves.toBeUndefined();
+      });
+
+      it('should deny regular user for any permission', async () => {
+        await expect(
+          checkAdminPermission(regularUserId, ADMIN_PERMISSIONS.MANAGE_USERS)
+        ).rejects.toThrow(ForbiddenError);
+      });
+
+      it('should throw NotFoundError for non-existent user', async () => {
+        const fakeUserId = '00000000-0000-0000-0000-000000000000';
+        await expect(
+          checkAdminPermission(fakeUserId, ADMIN_PERMISSIONS.MANAGE_USERS)
+        ).rejects.toThrow(NotFoundError);
+      });
     });
   });
 });

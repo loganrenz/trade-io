@@ -11,7 +11,9 @@ import {
   getUserByEmail,
   getUserByProviderId,
   deleteUser,
+  updateUserRole,
 } from '../../server/lib/auth';
+import { UserRole } from '../../server/lib/authz';
 
 describe('Authentication Service', () => {
   beforeAll(async () => {
@@ -292,6 +294,71 @@ describe('Authentication Service', () => {
       });
 
       expect(auditLogs.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('updateUserRole()', () => {
+    it('should update user role to ADMIN', async () => {
+      const user = await signup({
+        email: 'roletest@example.com',
+        provider: 'test',
+        providerUserId: 'roletest-123',
+      });
+
+      expect(user.role).toBe(UserRole.USER);
+
+      const updatedUser = await updateUserRole(user.id, UserRole.ADMIN);
+
+      expect(updatedUser.role).toBe(UserRole.ADMIN);
+      expect(updatedUser.id).toBe(user.id);
+      expect(updatedUser.email).toBe(user.email);
+    });
+
+    it('should update user role to USER', async () => {
+      const user = await signup({
+        email: 'roletest2@example.com',
+        provider: 'test',
+        providerUserId: 'roletest-456',
+        role: UserRole.ADMIN,
+      });
+
+      expect(user.role).toBe(UserRole.ADMIN);
+
+      const updatedUser = await updateUserRole(user.id, UserRole.USER);
+
+      expect(updatedUser.role).toBe(UserRole.USER);
+    });
+
+    it('should create audit log when role is updated', async () => {
+      const user = await signup({
+        email: 'roletest3@example.com',
+        provider: 'test',
+        providerUserId: 'roletest-789',
+      });
+
+      await updateUserRole(user.id, UserRole.ADMIN);
+
+      const auditLogs = await db.auditLog.findMany({
+        where: {
+          actor: user.id,
+          action: 'USER_UPDATED',
+          resourceId: user.id,
+        },
+      });
+
+      expect(auditLogs.length).toBeGreaterThanOrEqual(1);
+      expect(auditLogs[0].metadata).toMatchObject({ newRole: UserRole.ADMIN });
+    });
+
+    it('should create user with ADMIN role during signup', async () => {
+      const user = await signup({
+        email: 'admintest@example.com',
+        provider: 'test',
+        providerUserId: 'admintest-123',
+        role: UserRole.ADMIN,
+      });
+
+      expect(user.role).toBe(UserRole.ADMIN);
     });
   });
 });
