@@ -5,6 +5,7 @@
 import { db } from './db';
 import { logger } from './logger';
 import { audit, AuditAction, AuditResource } from './audit';
+import { UserRole } from './authz';
 import type { User } from '@prisma/client';
 
 export interface SignupInput {
@@ -12,12 +13,14 @@ export interface SignupInput {
   provider: string;
   providerUserId: string;
   emailVerified?: boolean;
+  role?: UserRole;
 }
 
 export interface AuthUser {
   id: string;
   email: string;
   emailVerified: boolean;
+  role: UserRole;
   provider: string;
   createdAt: Date;
 }
@@ -42,6 +45,7 @@ export async function signup(input: SignupInput): Promise<AuthUser> {
     data: {
       email: input.email,
       emailVerified: input.emailVerified ?? false,
+      role: input.role ?? UserRole.USER,
       provider: input.provider,
       providerUserId: input.providerUserId,
     },
@@ -213,7 +217,32 @@ function toAuthUser(user: User): AuthUser {
     id: user.id,
     email: user.email,
     emailVerified: user.emailVerified,
+    role: user.role as UserRole,
     provider: user.provider || 'unknown',
     createdAt: user.createdAt,
   };
+}
+
+/**
+ * Update user role (admin only operation)
+ */
+export async function updateUserRole(userId: string, role: UserRole): Promise<AuthUser> {
+  logger.info({ userId, newRole: role }, 'Updating user role');
+
+  const user = await db.user.update({
+    where: { id: userId },
+    data: { role },
+  });
+
+  await audit({
+    actor: userId,
+    action: AuditAction.USER_UPDATED,
+    resource: AuditResource.USER,
+    resourceId: userId,
+    metadata: { newRole: role },
+  });
+
+  logger.info({ userId, role }, 'User role updated successfully');
+
+  return toAuthUser(user);
 }
